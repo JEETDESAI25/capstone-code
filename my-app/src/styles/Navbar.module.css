@@ -1,10 +1,11 @@
 .navbar {
-  background-color: #333;
-  color: white;
+  background-color: #141414;
+  color: #7ceed3;
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 2px solid white;
 }
 
 .navbar ul {
@@ -15,4 +16,9 @@
 
 .navbar li {
   cursor: pointer;
+}
+
+.unite-title {
+  font-size: 2rem;
+  font-weight: bold;
 }
