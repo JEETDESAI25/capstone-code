@@ -1,0 +1,15 @@
+.sidePanel {
+  width: 200px;
+  background-color: #f4f4f4;
+  padding: 20px;
+}
+
+.sidePanel ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidePanel li {
+  margin-bottom: 10px;
+  cursor: pointer;
+}
