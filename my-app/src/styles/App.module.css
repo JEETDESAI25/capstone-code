@@ -14,3 +14,24 @@
   flex: 1;
   padding: 20px;
 }
+
+.filters {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.filter {
+  color: white;
+  cursor: pointer;
+  padding: 0px 10px;
+  margin: 0px 10px;
+}
+
+.filter:hover {
+  text-decoration: underline;
+  text-underline-offset: 10px;
+}

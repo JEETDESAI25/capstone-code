@@ -1,7 +1,7 @@
 .navbar {
   background-color: #141414;
   color: #7ceed3;
-  padding: 10px 20px;
+  padding: 0px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -18,7 +18,8 @@
   cursor: pointer;
 }
 
-.unite-title {
+.uniteTitle {
   font-size: 2rem;
   font-weight: bold;
+  margin: 20px;
 }

@@ -9,8 +9,11 @@ export default function Home() {
       <div className={styles.mainContent}>
         <SidePanel />
         <div className={styles.content}>
-          <h1>Welcome to My Next.js App</h1>
-          <p>This is a basic starting page with a navbar and a side panel.</p>
+          <div className={styles.filters}>
+            <h1 className={styles.filter}>Home</h1>
+            <h1 className={styles.filter}>Following</h1>
+            <h1 className={styles.filter}>Popular</h1>
+          </div>
         </div>
       </div>
     </div>
