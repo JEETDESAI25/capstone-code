@@ -2,17 +2,21 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #343434;
+  background-color: #2f2f2f;
+  color: white
 }
 
 .mainContent {
   display: flex;
   flex: 1;
+  overflow-y: auto;
 }
 
 .content {
   flex: 1;
-  padding: 20px;
+  padding: 40px;
+  background-color: #3d3d3d;
+  border-radius: 8px;
 }
 
 .filters {
@@ -45,4 +49,75 @@
   width: 110%; /* Extend beyond the length of the text */
   height: 3px; /* Thickness of the underline */
   background-color: white; /* Color of the underline */
+}
+
+/* Profile Section */
+.profileSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: #3d3d3d;
+  padding: 20px;
+  border-radius: 8px;
+  color: white;
+}
+
+.profileImage {
+  width: 100px; /* Adjust size as per design */
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.profileTitle {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.description {
+  color: #b0b0b0;
+  font-size: 1rem;
+  max-width: 300px;
+  margin-bottom: 15px;
+}
+
+.followButton {
+  background-color: #7ceed3;
+  color: #141414;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin: 10px 5px;
+}
+
+.followButton:hover {
+  background-color: #6fd1c3;
+}
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding-top: 15px;
+  border-bottom: 1px solid #555;
+}
+
+.tabs h2 {
+  font-size: 1rem;
+  color: #b0b0b0;
+  cursor: pointer;
+  padding-bottom: 10px;
+  transition: color 0.3s;
+}
+
+.tabs h2:hover,
+.tabs h2.active {
+  color: white;
+  border-bottom: 3px solid #7ceed3;
+  font-weight: bold;
 }

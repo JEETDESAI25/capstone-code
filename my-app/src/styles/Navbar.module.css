@@ -1,37 +1,31 @@
+/* Navbar.module.css */
 .navbar {
-  background-color: #141414;
-  color: #7ceed3;
-  padding: 0px 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid white;
-}
-
-.navbar ul {
-  list-style-type: none;
-  display: flex;
-  gap: 20px;
-}
-
-.navbar li {
-  cursor: pointer;
+  justify-content: space-between;
+  background-color: #141414;
+  padding: 15px 30px;
+  height: 70px; /* Adjust height as per design */
 }
 
 .uniteTitle {
   font-size: 2rem;
-  font-weight: bold;
-  margin: 20px;
+  color: #7ceed3;
+  margin-right: auto; /* Push search to the center */
 }
 
-.profilePicture {
-  width: 45px;
-  height: 45px;
+.searchInput {
+  max-width: 300px; /* Centered narrower search bar */
+  flex: 1;
+  border-radius: 20px;
+  padding: 8px 15px;
+  margin: 0 20px; /* Spacing on both sides */
+}
+
+.profileIcon {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  margin-left: 20px;
-  margin-right: 10px;
-}
-
-.profilePicture:hover {
   cursor: pointer;
+  margin-left: auto;
 }
