@@ -1,5 +1,5 @@
 import styles from "../styles/Navbar.module.css";
-import SearchBar from "./Searchbar.tsx";
+import SearchBar from "./SearchBar.tsx";
 import default_pfp from "./../../public/images/default_pfp.jpeg";
 import Image from "next/image";
 
