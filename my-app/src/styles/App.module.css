@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #656565;
+  background-color: #343434;
 }
 
 .mainContent {
@@ -32,6 +32,17 @@
 }
 
 .filter:hover {
-  text-decoration: underline;
+  position: relative;
+  display: inline-block;
   text-underline-offset: 10px;
+}
+
+.filter::after {
+  content: "";
+  position: absolute;
+  left: -9px;
+  bottom: -3px; /* Adjust to move closer or farther from the text */
+  width: 110%; /* Extend beyond the length of the text */
+  height: 3px; /* Thickness of the underline */
+  background-color: white; /* Color of the underline */
 }

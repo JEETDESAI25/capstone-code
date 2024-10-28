@@ -1,6 +1,6 @@
 import styles from "../styles/App.module.css";
-import Navbar from "./navbar/Navbar";
-import SidePanel from "./sidepanel/Sidepanel";
+import Navbar from "../components/Navbar";
+import SidePanel from "../components/Sidepanel";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
           <div className={styles.filters}>
             <h1 className={styles.filter}>Home</h1>
             <h1 className={styles.filter}>Following</h1>
-            <h1 className={styles.filter}>Popular</h1>
+            <h1 className={styles.filter}>For You</h1>
           </div>
         </div>
       </div>
