@@ -1,25 +1,23 @@
-/* Navbar.module.css */
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: #141414;
   padding: 15px 30px;
-  height: 70px; /* Adjust height as per design */
+  border-bottom: 1px solid #2f2f2f;
 }
 
 .uniteTitle {
   font-size: 2rem;
   color: #7ceed3;
-  margin-right: auto; /* Push search to the center */
+  font-weight: 500;
+  margin: 0;
 }
 
-.searchInput {
-  max-width: 300px; /* Centered narrower search bar */
+.searchContainer {
   flex: 1;
-  border-radius: 20px;
-  padding: 8px 15px;
-  margin: 0 20px; /* Spacing on both sides */
+  max-width: 600px;
+  margin: 0 20px;
 }
 
 .profileIcon {
@@ -27,5 +25,4 @@
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
-  margin-left: auto;
 }
