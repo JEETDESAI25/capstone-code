@@ -20,8 +20,14 @@ export default function ProfileDetails({
         <SidePanel />
         <main className={styles.content}>
           <div className={styles.profileSection}>
-            <Image className={styles.profileImage} src={default_pfp} alt="" />
-            <h2>{params.profileDetails}</h2>
+            <Image
+              src="/images/profile.jpeg"
+              alt="Profile"
+              width={150}
+              height={150}
+              className={styles.profileImage}
+            />
+            <h2>Black Lives Matter Campaign</h2>
             <p className={styles.description}>
               Short Description of the cause and maybe some links.
             </p>
@@ -29,7 +35,7 @@ export default function ProfileDetails({
           </div>
           {/* Tabs */}
           <div className={styles.tabs}>
-            <h2 className="active">Posts</h2>
+            <h2 className={styles.active}>Posts</h2>
             <h2>News</h2>
             <h2>Trending</h2>
             <h2>Top Users</h2>

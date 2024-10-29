@@ -1,4 +1,4 @@
-import styles from "../styles/Posts.module.css";
+import styles from "../styles/Post.module.css";
 import Image from "next/image";
 import default_pfp from "./../../public/images/default_pfp.jpeg";
 
