@@ -1,5 +1,4 @@
-// src/components/Post.tsx
-import styles from "../styles/Posts.module.css";
+import styles from "../styles/Post.module.css";
 
 interface PostProps {
   username: string;

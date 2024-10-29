@@ -1,9 +1,18 @@
+.sidePanelContainer {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #1d1d1d;
+  border-right: 1px solid white;
+}
+
 .sidePanel {
   width: 220px;
+  overflow-y: auto;
   background-color: #1d1d1d;
   padding: 30px 20px;
   color: white;
-  border-right: 1px solid #2f2f2f;
+  border-right: 1px solid white;
 }
 
 .sidePanel ul {

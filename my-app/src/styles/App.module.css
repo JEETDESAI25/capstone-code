@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100vh;
   background-color: #2f2f2f;
-  color: white
+  color: white;
 }
 
 .mainContent {
@@ -33,6 +33,7 @@
   cursor: pointer;
   padding: 0px 10px;
   margin: 0px 10px;
+  font-size: 1.5rem;
 }
 
 .filter:hover {
@@ -120,4 +121,11 @@
   color: white;
   border-bottom: 3px solid #7ceed3;
   font-weight: bold;
+}
+
+.postsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
 }

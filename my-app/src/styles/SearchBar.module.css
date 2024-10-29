@@ -5,6 +5,7 @@
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 100px;
+  margin: 0px 10px;
 }
 
 .searchInput:focus {
