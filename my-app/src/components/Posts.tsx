@@ -1,5 +1,6 @@
-// src/components/Post.tsx
 import styles from "../styles/Posts.module.css";
+import Image from "next/image";
+import default_pfp from "./../../public/images/default_pfp.jpeg";
 
 interface PostProps {
   username: string;
@@ -17,12 +18,29 @@ export default function Post({
   return (
     <div className={styles.post}>
       <div className={styles.header}>
-        <h2>{username}</h2>
+        <div className={styles.userInfo}>
+          <Image
+            src={default_pfp}
+            alt="Profile"
+            className={styles.profilePic}
+            width={40}
+            height={40}
+          />
+          <span className={styles.username}>{username}</span>
+        </div>
         <span className={styles.timestamp}>{timestamp}</span>
       </div>
       <p className={styles.content}>{content}</p>
       {imageUrl && (
-        <img src={imageUrl} alt="Post image" className={styles.image} />
+        <div style={{ position: "relative", width: "100%", height: "300px" }}>
+          <Image
+            src={imageUrl}
+            alt="Post image"
+            className={styles.image}
+            fill
+            style={{ objectFit: "cover" }}
+          />
+        </div>
       )}
     </div>
   );
