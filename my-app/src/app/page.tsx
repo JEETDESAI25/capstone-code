@@ -3,6 +3,7 @@ import styles from "../styles/App.module.css";
 import Navbar from "../components/Navbar";
 import SidePanel from "../components/Sidepanel";
 import Post from "../components/Posts";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -12,9 +13,11 @@ export default function Home() {
         <SidePanel />
         <div className={styles.content}>
           <div className={styles.profileSection}>
-            <img
-              src="/images/default_pfp.jpg"
+            <Image
+              src="/images/profile.jpeg"
               alt="Profile"
+              width={150}
+              height={150}
               className={styles.profileImage}
             />
             <h2>Black Lives Matter Campaign</h2>
@@ -25,7 +28,7 @@ export default function Home() {
           </div>
           {/* Tabs */}
           <div className={styles.tabs}>
-            <h2 className="active">Posts</h2>
+            <h2 className={styles.active}>Posts</h2>
             <h2>News</h2>
             <h2>Trending</h2>
             <h2>Top Users</h2>

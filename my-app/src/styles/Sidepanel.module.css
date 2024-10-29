@@ -1,23 +1,27 @@
 .sidePanel {
-  width: 220px;
-  background-color: #1d1d1d;
-  padding: 30px 20px;
-  color: white;
+  width: 250px;
+  background-color: #141414;
+  padding: 20px;
   border-right: 1px solid #2f2f2f;
 }
 
 .sidePanel ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .sidePanel li {
-  margin-bottom: 25px;
-  font-size: 1.2rem;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
   cursor: pointer;
+  margin-bottom: 5px;
 }
 
-.sidePanel li:hover {
-  color: #7ceed3;
+.sidePanel li svg {
+  margin-right: 10px;
 }
