@@ -1,16 +1,22 @@
 import styles from "../styles/Navbar.module.css";
 import SearchBar from "./SearchBar";
-import default_pfp from "./../../public/images/default_pfp.jpeg";
 import Image from "next/image";
+import default_pfp from "./../../public/images/default_pfp.jpeg";
 
 const Navbar: React.FC = () => {
   return (
     <nav className={styles.navbar}>
-      <div>
-        <h2 className={styles.uniteTitle}>Unite</h2>
+      <h1 className={styles.uniteTitle}>Unite</h1>
+      <div className={styles.searchContainer}>
+        <SearchBar />
       </div>
-      <SearchBar />
-      <Image className={styles.profileIcon} src={default_pfp} alt="" />
+      <Image
+        src={default_pfp}
+        alt="Profile"
+        className={styles.profileIcon}
+        width={40}
+        height={40}
+      />
     </nav>
   );
 };

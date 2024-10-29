@@ -1,34 +1,41 @@
 .post {
-  background-color: #f5f5f5;
-  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin: 20px auto;
   padding: 20px;
-  margin: 15px 0;
-  max-width: 600px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
 }
 
 .header {
   display: flex;
   align-items: center;
-  font-weight: bold;
-  color: #333;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
 
-.timestamp {
-  font-size: 0.8rem;
-  color: #888;
-  margin-left: auto;
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profilePic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 
 .content {
-  margin-top: 10px;
-  font-size: 0.95rem;
-  color: #444;
+  color: #e0e0e0;
+  line-height: 1.6;
+  margin: 15px 0;
+  font-size: 14px;
 }
 
 .image {
-  margin-top: 15px;
-  border-radius: 10px;
   width: 100%;
-  height: auto;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 10px;
 }

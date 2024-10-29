@@ -4,14 +4,22 @@
   padding: 0px 20px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid white;
+  background-color: #141414;
+  padding: 15px 30px;
+  border-bottom: 1px solid #2f2f2f;
 }
 
 .uniteTitle {
   font-size: 2rem;
   color: #7ceed3;
-  margin-right: auto; /* Push search to the center */
+  font-weight: 500;
+  margin: 0;
+}
+
+.searchContainer {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 20px;
 }
 
 .profileIcon {
