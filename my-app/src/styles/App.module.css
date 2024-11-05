@@ -1,13 +1,20 @@
 /* App Layout */
+.root {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+}
+
 .app {
   display: flex;
   flex-direction: column;
   height: 100vh;
   background-color: #141414;
   color: white;
-  overflow: hidden;
   background-color: #2f2f2f;
   color: white;
+  overflow-x: hidden;
 }
 
 .mainContent {
@@ -21,6 +28,8 @@
   padding: 40px;
   background-color: #3d3d3d;
   border-radius: 8px;
+  height: 95%;
+  overflow-y: auto;
 }
 
 .filters {
@@ -140,11 +149,5 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-}
-
-.postsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  max-width: 100%;
 }

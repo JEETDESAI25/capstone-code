@@ -33,7 +33,6 @@ export default function ProfileDetails({
             </p>
             <button className={styles.followButton}>Follow</button>
           </div>
-          {/* Tabs */}
           <div className={styles.tabs}>
             <h2 className={styles.active}>Posts</h2>
             <h2>News</h2>

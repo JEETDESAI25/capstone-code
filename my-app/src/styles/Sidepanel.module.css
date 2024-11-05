@@ -4,6 +4,7 @@
   overflow: hidden;
   background-color: #1d1d1d;
   border-right: 1px solid white;
+  box-sizing: border-box;
 }
 
 .sidePanel {
@@ -11,7 +12,7 @@
   background-color: #141414;
   padding: 20px;
   border-right: 1px solid #2f2f2f;
-  width: 220px;
+  width: 150px;
   overflow-y: auto;
   background-color: #1d1d1d;
   padding: 30px 20px;
@@ -34,6 +35,10 @@
   font-weight: 500;
   cursor: pointer;
   margin-bottom: 5px;
+}
+
+.sidepanel li:hover {
+  background-color: #2f2f2f;
 }
 
 .sidePanel li svg {
