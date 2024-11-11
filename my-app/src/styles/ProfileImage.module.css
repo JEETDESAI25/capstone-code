@@ -1,0 +1,52 @@
+.profileContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.profileImage {
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  border: 2px solid #ccc;
+}
+
+.profileImage:hover {
+  transform: scale(1.1);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 1000;
+  min-width: 50px;
+}
+
+.dropdownButton {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  text-align: center;
+  white-space: nowrap;
+  width: auto;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.dropdownButton:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.dropdownButton:active {
+  background-color: #003f7f;
+  transform: scale(0.95);
+}

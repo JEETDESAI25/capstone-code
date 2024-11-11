@@ -1,7 +1,6 @@
 import styles from "../styles/Navbar.module.css";
 import SearchBar from "./SearchBar";
-import Image from "next/image";
-import default_pfp from "./../../public/images/default_pfp.jpeg";
+import ProfileImage from "./ProfileImage";
 
 const Navbar: React.FC = () => {
   return (
@@ -10,13 +9,7 @@ const Navbar: React.FC = () => {
       <div className={styles.searchContainer}>
         <SearchBar />
       </div>
-      <Image
-        src={default_pfp}
-        alt="Profile"
-        className={styles.profileIcon}
-        width={40}
-        height={40}
-      />
+      <ProfileImage />
     </nav>
   );
 };
