@@ -28,6 +28,20 @@
 }
 
 .dropdownButton {
+  border: none;
+  color: black;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  text-align: center;
+  white-space: nowrap;
+  width: auto;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-bottom: 5px;
+}
+
+.signoutButton {
   background-color: #7ceed3;
   border: none;
   color: black;
@@ -41,17 +55,16 @@
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.dropdownButton:hover {
+.signoutButton:hover {
   background-color: #61baa5;
   transform: scale(1.05);
 }
 
-.dropdownButton:active {
+.signoutButton:active {
   background-color: #4a8c7c;
   transform: scale(0.95);
 }
 
-/* Overlay that blurs the background */
 .overlay {
   position: fixed;
   top: 0;
@@ -63,7 +76,6 @@
   z-index: 999;
 }
 
-/* Popup styles */
 .popup {
   position: fixed;
   top: 50%;

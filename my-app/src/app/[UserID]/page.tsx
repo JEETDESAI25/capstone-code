@@ -8,6 +8,7 @@ import Post from "../../components/Post";
 import default_pfp from "./../../../public/images/default_pfp.jpeg";
 import Image from "next/image";
 import { fetchDocumentById } from "../firebase/firebaseDatabase";
+import LoadingScreen from "../../components/LoadingScreen";
 
 export default function ProfileDetails({
   params,
@@ -34,8 +35,7 @@ export default function ProfileDetails({
           setUser({
             username: userData.username,
             bio: userData.bio,
-            profilePicture:
-              userData.profilePicture || "/images/default_pfp.jpeg",
+            profilePicture: userData.profilePicture || { default_pfp },
           });
         }
 
@@ -51,7 +51,7 @@ export default function ProfileDetails({
   }, [params.UserID]);
 
   if (!user) {
-    return <p>Loading...</p>; // Show loading until user data is fetched
+    return <LoadingScreen />;
   }
 
   return (
