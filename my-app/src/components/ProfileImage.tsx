@@ -72,7 +72,7 @@ export default function ProfileImage(): JSX.Element {
       {showDropdown && (
         <div className={styles.dropdownMenu}>
           <button
-            onClick={() => router.push(`/profile/${auth.currentUser?.uid}`)}
+            onClick={() => router.push(`/${auth.currentUser?.uid}`)}
             className={styles.dropdownButton}
           >
             View Profile

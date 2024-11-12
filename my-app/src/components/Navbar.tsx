@@ -1,11 +1,14 @@
 import styles from "../styles/Navbar.module.css";
 import SearchBar from "./SearchBar";
 import ProfileImage from "./ProfileImage";
+import Link from "next/link";
 
 const Navbar: React.FC = () => {
   return (
     <nav className={styles.navbar}>
-      <h1 className={styles.uniteTitle}>Unite</h1>
+      <Link href="/" className={styles.uniteTitle}>
+        <h1 className={styles.uniteTitle}>Unite</h1>
+      </Link>
       <div className={styles.searchContainer}>
         <SearchBar />
       </div>
