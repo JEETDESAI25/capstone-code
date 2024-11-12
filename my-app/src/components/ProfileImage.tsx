@@ -6,10 +6,17 @@ import default_pfp from "./../../public/images/default_pfp.jpeg"; // Default pro
 import styles from "../styles/ProfileImage.module.css"; // Component styles
 import { signInWithGoogle, User } from "../app/firebase/firebaseAuth"; // Import sign-in logic
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import {
+  createUserDocument,
+  userExists,
+} from "../app/firebase/firebaseDatabase"; // Import database logic
 
 export default function ProfileImage(): JSX.Element {
   const [user, setUser] = useState<User | null>(null); // State for the signed-in user
   const [showDropdown, setShowDropdown] = useState<boolean>(false); // State to toggle dropdown visibility
+  const [showNewUserPopup, setShowNewUserPopup] = useState<boolean>(false); // State to show new user popup
+  const [bio, setBio] = useState<string>(""); // New user bio
+  const [username, setUsername] = useState<string>(""); // New user username
 
   // Initialize Firebase Auth
   const auth = getAuth();
@@ -22,7 +29,7 @@ export default function ProfileImage(): JSX.Element {
     }
 
     // Listen for Firebase auth state changes
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const currentUser: User = {
           displayName: firebaseUser.displayName || "Anonymous",
@@ -31,6 +38,19 @@ export default function ProfileImage(): JSX.Element {
         };
         setUser(currentUser);
         localStorage.setItem("user", JSON.stringify(currentUser)); // Save user to localStorage
+
+        // Check if the user already exists in Firestore
+        const exists = await userExists(firebaseUser.uid);
+        if (!exists) {
+          setShowNewUserPopup(true); // Show the new user popup
+        } else {
+          // If the user already exists, create/update the user document
+          await createUserDocument(firebaseUser.uid, {
+            displayName: currentUser.displayName,
+            email: currentUser.email,
+            profilePicture: currentUser.profilePicture,
+          });
+        }
       } else {
         setUser(null);
         localStorage.removeItem("user"); // Clear user from localStorage if signed out
@@ -55,6 +75,19 @@ export default function ProfileImage(): JSX.Element {
       const signedInUser = await signInWithGoogle();
       setUser(signedInUser); // Update user state
       localStorage.setItem("user", JSON.stringify(signedInUser)); // Save user to localStorage
+
+      // Check if the user already exists in Firestore
+      const exists = await userExists(auth.currentUser?.uid || "");
+      if (!exists) {
+        setShowNewUserPopup(true); // Show the new user popup
+      } else {
+        // Create or update the user document
+        await createUserDocument(auth.currentUser?.uid || "", {
+          displayName: signedInUser.displayName,
+          email: signedInUser.email,
+          profilePicture: signedInUser.profilePicture,
+        });
+      }
     } catch (error) {
       console.error("Error during sign-in:", error);
     }
@@ -70,6 +103,23 @@ export default function ProfileImage(): JSX.Element {
       console.log("User signed out successfully.");
     } catch (error) {
       console.error("Error during sign-out:", error);
+    }
+  };
+
+  // Function to handle new user data submission
+  const handleNewUserSubmit = async (): Promise<void> => {
+    try {
+      const uid = auth.currentUser?.uid || "";
+      await createUserDocument(uid, {
+        displayName: user?.displayName || "Anonymous",
+        email: user?.email || "",
+        profilePicture: user?.profilePicture || "",
+        username,
+        bio,
+      });
+      setShowNewUserPopup(false); // Close the popup
+    } catch (error) {
+      console.error("Error saving new user data:", error);
     }
   };
 
@@ -91,6 +141,37 @@ export default function ProfileImage(): JSX.Element {
             Sign Out
           </button>
         </div>
+      )}
+      {/* New User Popup */}
+      {showNewUserPopup && (
+        <>
+          {/* Overlay */}
+          <div className={styles.overlay}></div>
+
+          {/* Popup */}
+          <div className={styles.popup}>
+            <h2>Welcome! Complete Your Profile</h2>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={styles.inputField}
+            />
+            <textarea
+              placeholder="Tell us about yourself"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              className={styles.textArea}
+            />
+            <button
+              onClick={handleNewUserSubmit}
+              className={styles.popupButton}
+            >
+              Save
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

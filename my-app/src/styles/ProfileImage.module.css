@@ -28,9 +28,9 @@
 }
 
 .dropdownButton {
-  background-color: #007bff;
+  background-color: #7ceed3;
   border: none;
-  color: white;
+  color: black;
   padding: 8px 12px;
   font-size: 12px;
   cursor: pointer;
@@ -42,11 +42,81 @@
 }
 
 .dropdownButton:hover {
-  background-color: #0056b3;
+  background-color: #61baa5;
   transform: scale(1.05);
 }
 
 .dropdownButton:active {
-  background-color: #003f7f;
+  background-color: #4a8c7c;
   transform: scale(0.95);
+}
+
+/* Overlay that blurs the background */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+}
+
+/* Popup styles */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 300px;
+  z-index: 1000;
+  text-align: center;
+  background-color: #141414;
+  border: 1px solid white;
+}
+
+.popup h2 {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.inputField,
+.textArea {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.textArea {
+  resize: none;
+  height: 80px;
+}
+
+.popupButton {
+  background-color: #7ceed3;
+  color: black;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 100%;
+}
+
+.popupButton:hover {
+  background-color: #61baa5;
+}
+
+.popupButton:active {
+  background-color: #4a8c7c;
 }
