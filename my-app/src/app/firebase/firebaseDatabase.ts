@@ -1,6 +1,5 @@
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-
-const db = getFirestore();
+import { db } from "./firebaseConfig";
 
 // Check if a user document exists
 export const userExists = async (uid: string): Promise<boolean> => {
@@ -20,5 +19,22 @@ export const createUserDocument = async (
     console.log(`User document created/updated for UID: ${uid}`);
   } catch (error) {
     console.error("Error creating or updating user document:", error);
+  }
+};
+
+export const fetchDocumentById = async (collection: string, id: string) => {
+  try {
+    const docRef = doc(db, collection, id); // Reference to the document
+    const docSnapshot = await getDoc(docRef); // Fetch the document
+
+    if (docSnapshot.exists()) {
+      return { id: docSnapshot.id, ...docSnapshot.data() }; // Return the document data with the ID
+    } else {
+      console.log("Document not found");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching document:", error);
+    throw error; // Propagate the error for handling
   }
 };

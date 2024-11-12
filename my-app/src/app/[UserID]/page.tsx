@@ -1,18 +1,59 @@
-// src/app/page.tsx
+"use client";
+
+import { useState, useEffect } from "react";
 import styles from "../../styles/App.module.css";
 import Navbar from "../../components/Navbar";
 import SidePanel from "../../components/Sidepanel";
 import Post from "../../components/Post";
 import default_pfp from "./../../../public/images/default_pfp.jpeg";
 import Image from "next/image";
+import { fetchDocumentById } from "../firebase/firebaseDatabase";
 
 export default function ProfileDetails({
   params,
 }: {
   params: {
-    profileDetails: string;
+    UserID: string;
   };
 }) {
+  const [user, setUser] = useState<{
+    username: string;
+    bio: string;
+    profilePicture: string;
+  } | null>(null);
+  const [posts, setPosts] = useState<
+    Array<{ id: string; content: string; timestamp: string }>
+  >([]);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        // Fetch user details
+        const userData = await fetchDocumentById("users", params.UserID);
+        if (userData) {
+          setUser({
+            username: userData.username,
+            bio: userData.bio,
+            profilePicture:
+              userData.profilePicture || "/images/default_pfp.jpeg",
+          });
+        }
+
+        // Fetch user's posts
+        const userPosts = await fetchUserPosts(params.UserID); // Replace with Firestore query for posts
+        setPosts(userPosts);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [params.UserID]);
+
+  if (!user) {
+    return <p>Loading...</p>; // Show loading until user data is fetched
+  }
+
   return (
     <div className={styles.app}>
       <Navbar />
@@ -21,15 +62,15 @@ export default function ProfileDetails({
         <main className={styles.content}>
           <div className={styles.profileSection}>
             <Image
-              src="/images/profile.jpeg"
+              src={user.profilePicture}
               alt="Profile"
               width={150}
               height={150}
               className={styles.profileImage}
             />
-            <h2>Black Lives Matter Campaign</h2>
-            <p className={styles.description}>
-              Short Description of the cause and maybe some links.
+            <h2>{user.username}</h2>
+            <p className={styles.profileBio}>
+              {user.bio || "No bio available."}
             </p>
             <button className={styles.followButton}>Follow</button>
           </div>
