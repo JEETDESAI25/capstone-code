@@ -151,3 +151,80 @@
   justify-content: center;
   max-width: 100%;
 }
+
+.profileHeader {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.profileInfo {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.userDetails {
+  flex: 1;
+}
+
+.username {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.email {
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.bio {
+  color: #fff;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statNumber {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #7ceed3;
+}
+
+.statLabel {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.noPosts {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.profileImage {
+  border-radius: 50%;
+  border: 4px solid #7ceed3;
+}
