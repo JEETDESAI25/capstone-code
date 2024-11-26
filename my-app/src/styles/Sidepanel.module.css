@@ -1,14 +1,23 @@
 .sidePanelContainer {
-  width: 250px;
-  background-color: #2f2f2f;
-  height: 100%;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #1d1d1d;
+  border-right: 1px solid white;
+  box-sizing: border-box;
 }
 
 .sidePanel {
+  width: 250px;
+  background-color: #141414;
   padding: 20px;
-  height: 100%;
-  background-color: #2f2f2f;
-  border-right: 1px solid #3d3d3d;
+  border-right: 1px solid #2f2f2f;
+  width: 150px;
+  overflow-y: auto;
+  background-color: #1d1d1d;
+  padding: 30px 20px;
+  color: white;
+  border-right: 1px solid white;
 }
 
 .sidePanel ul {
