@@ -49,6 +49,8 @@ export default function Home() {
                 imageUrl={post.imageUrl}
                 timestamp={post.timestamp}
                 userId={post.uid}
+                likes={post.likes}
+                likedBy={post.likedBy}
               />
             ))}
             <Post

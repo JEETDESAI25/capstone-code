@@ -64,6 +64,8 @@ export default function CreatePost() {
         content: content,
         imageUrl: imageUrl,
         timestamp: Timestamp.now(),
+        likes: 0,
+        likedBy: [],
       };
 
       console.log("Creating post with data:", postData);

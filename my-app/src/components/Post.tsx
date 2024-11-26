@@ -2,17 +2,27 @@ import styles from "../styles/Post.module.css";
 import Image from "next/image";
 import default_pfp from "./../../public/images/default_pfp.jpeg";
 import { getAuth } from "firebase/auth";
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  deleteDoc,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../app/firebase/firebaseConfig";
+import { useState, useEffect } from "react";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 interface PostProps {
-  id: string;
+  id?: string;
   username: string;
   content: string;
   imageUrl?: string;
   timestamp: string;
-  userId: string;
+  userId?: string;
+  likes?: number;
+  likedBy?: string[];
 }
 
 export default function Post({
@@ -22,9 +32,19 @@ export default function Post({
   imageUrl,
   timestamp,
   userId,
+  likes = 0,
+  likedBy = [],
 }: PostProps) {
   const auth = getAuth();
-  const isOwner = auth.currentUser?.uid === userId;
+  const isOwner = userId ? auth.currentUser?.uid === userId : false;
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(likes);
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      setIsLiked(likedBy.includes(auth.currentUser.uid));
+    }
+  }, [likedBy]);
 
   const handleDelete = async () => {
     if (!isOwner) return;
@@ -43,6 +63,35 @@ export default function Post({
     }
   };
 
+  const handleLike = async () => {
+    if (!auth.currentUser || !id) {
+      // If it's a dummy post or user is not logged in
+      return;
+    }
+
+    const postRef = doc(db, "posts", id);
+    const userId = auth.currentUser.uid;
+
+    try {
+      if (isLiked) {
+        await updateDoc(postRef, {
+          likes: likeCount - 1,
+          likedBy: arrayRemove(userId),
+        });
+        setLikeCount((prev) => prev - 1);
+      } else {
+        await updateDoc(postRef, {
+          likes: likeCount + 1,
+          likedBy: arrayUnion(userId),
+        });
+        setLikeCount((prev) => prev + 1);
+      }
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error("Error updating like:", error);
+    }
+  };
+
   return (
     <div className={styles.post}>
       <div className={styles.header}>
@@ -55,9 +104,17 @@ export default function Post({
             height={40}
           />
           <span className={styles.username}>{username}</span>
+          <span className={styles.timestamp}>{timestamp}</span>
         </div>
         <div className={styles.postActions}>
-          <span className={styles.timestamp}>{timestamp}</span>
+          <button onClick={handleLike} className={styles.likeButton}>
+            {isLiked ? (
+              <AiFillHeart className={styles.likedHeart} />
+            ) : (
+              <AiOutlineHeart />
+            )}
+            <span>{likeCount}</span>
+          </button>
           {isOwner && (
             <button onClick={handleDelete} className={styles.deleteButton}>
               Delete
