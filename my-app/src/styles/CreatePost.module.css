@@ -1,0 +1,159 @@
+/* src/styles/CreatePost.module.css */
+.createPostForm {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 20px auto;
+}
+
+.textArea {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  resize: none;
+}
+
+.imageUploadSection {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.fileInputContainer {
+  position: relative;
+  width: fit-content;
+}
+
+.fileInput {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.customFileButton {
+  background-color: #7ceed3;
+  color: #141414;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 10px;
+  transition: background-color 0.2s;
+}
+
+.customFileButton:hover {
+  background-color: #6ad1c0;
+}
+
+.imagePreview {
+  position: relative;
+  display: inline-block;
+  margin: 10px 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.removeImage {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.removeImage:hover {
+  background-color: #cc0000;
+}
+
+.postActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.submitButton {
+  align-self: flex-end;
+  padding: 10px 20px;
+  background-color: #7ceed3;
+  color: #141414;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #6ad1c0;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  position: relative;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.loadingSpinner::after {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #141414;
+  border-color: #141414 transparent #141414 transparent;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.submitButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.imagePreview {
+  width: 100%;
+  max-width: 300px;
+  position: relative;
+  margin: 10px 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.imagePreview img {
+  width: 100%;
+  height: auto;
+  display: block;
+}

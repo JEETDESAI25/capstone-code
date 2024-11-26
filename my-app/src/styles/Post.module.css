@@ -1,8 +1,9 @@
 .post {
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  margin: 20px auto;
+  margin: 0 auto 20px auto;
   padding: 20px;
+  width: 100%;
   max-width: 800px;
 }
 
@@ -19,6 +20,39 @@
   gap: 10px;
 }
 
+.postActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.deleteButton {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.deleteButton:hover {
+  background-color: #cc0000;
+}
+
+.imageContainer {
+  margin-top: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
 .profilePic {
   width: 40px;
   height: 40px;
@@ -30,14 +64,6 @@
   line-height: 1.6;
   margin: 15px 0;
   font-size: 14px;
-}
-
-.image {
-  width: 100%;
-  max-height: 300px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-top: 10px;
 }
 
 .timestamp {
