@@ -12,9 +12,9 @@ import {
   createUserDocument,
 } from "../firebase/firebaseDatabase";
 import LoadingScreen from "../../components/LoadingScreen";
-import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 export default function ProfileDetails({
   params,
@@ -29,31 +29,18 @@ export default function ProfileDetails({
     profilePicture: string;
     email?: string;
   } | null>(null);
-  const [posts, setPosts] = useState<
-    Array<{
-      id: string;
-      content: string;
-      timestamp: string;
-      imageUrl?: string;
-      username: string;
-      userId: string;
-    }>
-  >([]);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [likedPosts, setLikedPosts] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState("posts");
   const [loading, setLoading] = useState(true);
   const auth = getAuth();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        // Check if user exists in database
+        // Fetch user data
         let userData = await fetchDocumentById("users", params.UserID);
-
-        // If user doesn't exist in database but is authenticated, create user document
-        if (
-          !userData &&
-          auth.currentUser &&
-          auth.currentUser.uid === params.UserID
-        ) {
+        if (!userData && auth.currentUser?.uid === params.UserID) {
           const newUserData = {
             username: auth.currentUser.displayName || "Anonymous",
             email: auth.currentUser.email,
@@ -63,7 +50,6 @@ export default function ProfileDetails({
           await createUserDocument(params.UserID, newUserData);
           userData = newUserData;
         }
-
         if (userData) {
           setUser({
             username: userData.username || "Anonymous",
@@ -75,20 +61,13 @@ export default function ProfileDetails({
 
         // Fetch user's posts
         const postsRef = collection(db, "posts");
-        const q = query(
-          postsRef,
-          where("uid", "==", params.UserID),
-          orderBy("timestamp", "desc")
-        );
-
-        const querySnapshot = await getDocs(q);
-        const userPosts = querySnapshot.docs.map((doc) => ({
+        const postsQuery = query(postsRef, where("uid", "==", params.UserID));
+        const postsSnapshot = await getDocs(postsQuery);
+        const userPosts = postsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
           timestamp: doc.data().timestamp.toDate().toLocaleString(),
-          userId: doc.data().uid,
         }));
-
         setPosts(userPosts);
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -100,7 +79,29 @@ export default function ProfileDetails({
     if (params.UserID) {
       fetchUserProfile();
     }
-  }, [params.UserID, auth.currentUser]);
+  }, [params.UserID]);
+
+  useEffect(() => {
+    const fetchLikedPosts = async () => {
+      try {
+        const postsRef = collection(db, "posts");
+        const likedPostsQuery = query(
+          postsRef,
+          where("likedBy", "array-contains", params.UserID)
+        );
+        const likedPostsSnapshot = await getDocs(likedPostsQuery);
+        const likedPostsData = likedPostsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          timestamp: doc.data().timestamp.toDate().toLocaleString(),
+        }));
+        setLikedPosts(likedPostsData);
+      } catch (error) {
+        console.error("Error fetching liked posts:", error);
+      }
+    };
+    fetchLikedPosts();
+  }, [params.UserID]);
 
   if (loading) {
     return <LoadingScreen />;
@@ -149,27 +150,28 @@ export default function ProfileDetails({
               </div>
             </div>
           </div>
-          <div className={styles.postsSection}>
-            <h3 className={styles.sectionTitle}>Posts</h3>
-            <div className={styles.postsContainer}>
-              {posts.length > 0 ? (
-                posts.map((post) => (
-                  <Post
-                    key={post.id}
-                    id={post.id}
-                    username={post.username}
-                    content={post.content}
-                    imageUrl={post.imageUrl}
-                    timestamp={post.timestamp}
-                    userId={post.userId}
-                  />
-                ))
-              ) : (
-                <div className={styles.noPosts}>
-                  <p>No posts yet</p>
-                </div>
-              )}
-            </div>
+          <div className={styles.tabContainer}>
+            <button
+              className={`${styles.tabButton} ${
+                activeTab === "posts" ? styles.activeTab : ""
+              }`}
+              onClick={() => setActiveTab("posts")}
+            >
+              Posts
+            </button>
+            <button
+              className={`${styles.tabButton} ${
+                activeTab === "likes" ? styles.activeTab : ""
+              }`}
+              onClick={() => setActiveTab("likes")}
+            >
+              Liked Posts
+            </button>
+          </div>
+          <div className={styles.postsContainer}>
+            {activeTab === "posts"
+              ? posts.map((post) => <Post key={post.id} {...post} />)
+              : likedPosts.map((post) => <Post key={post.id} {...post} />)}
           </div>
         </main>
       </div>

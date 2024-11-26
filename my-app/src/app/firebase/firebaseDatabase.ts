@@ -1,4 +1,13 @@
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
 // Check if a user document exists
@@ -36,5 +45,60 @@ export const fetchDocumentById = async (collection: string, id: string) => {
   } catch (error) {
     console.error("Error fetching document:", error);
     throw error; // Propagate the error for handling
+  }
+};
+
+export const formatTimestamp = (timestamp: any) => {
+  if (!timestamp) return "";
+
+  const date = timestamp.toDate();
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  if (diffInSeconds < 60) return "just now";
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+  return `${Math.floor(diffInSeconds / 86400)}d ago`;
+};
+
+export const fetchUserPosts = async (userId: string) => {
+  try {
+    const postsRef = collection(db, "posts");
+    const q = query(
+      postsRef,
+      where("userId", "==", userId),
+      orderBy("timestamp", "desc")
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+      timestamp: formatTimestamp(doc.data().timestamp),
+    }));
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    return [];
+  }
+};
+
+export const fetchUserLikedPosts = async (userId: string) => {
+  try {
+    const postsRef = collection(db, "posts");
+    const q = query(
+      postsRef,
+      where("likedBy", "array-contains", userId),
+      orderBy("timestamp", "desc")
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+      timestamp: formatTimestamp(doc.data().timestamp),
+    }));
+  } catch (error) {
+    console.error("Error fetching liked posts:", error);
+    return [];
   }
 };
