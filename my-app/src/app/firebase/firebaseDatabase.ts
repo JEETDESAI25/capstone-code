@@ -7,6 +7,10 @@ import {
   where,
   orderBy,
   getDocs,
+  updateDoc,
+  arrayRemove,
+  arrayUnion,
+  increment,
 } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
@@ -100,5 +104,32 @@ export const fetchUserLikedPosts = async (userId: string) => {
   } catch (error) {
     console.error("Error fetching liked posts:", error);
     return [];
+  }
+};
+
+export const updateFollowers = async (
+  isFollowing: boolean,
+  currentUserId: string,
+  profileUserId: string
+) => {
+  const userRef = doc(db, "users", currentUserId);
+  const profileRef = doc(db, "users", profileUserId);
+
+  if (isFollowing) {
+    await updateDoc(userRef, {
+      usersFollowing: arrayRemove(profileUserId),
+      followingCount: increment(-1),
+    });
+    await updateDoc(profileRef, {
+      followersCount: increment(-1),
+    });
+  } else {
+    await updateDoc(userRef, {
+      usersFollowing: arrayUnion(profileUserId),
+      followingCount: increment(1),
+    });
+    await updateDoc(profileRef, {
+      followersCount: increment(1),
+    });
   }
 };

@@ -256,3 +256,17 @@
   color: #7ceed3;
   border-bottom-color: #7ceed3;
 }
+
+.followButton {
+  background-color: #7ceed3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.followButton.following {
+  background-color: #6c757d;
+}

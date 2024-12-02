@@ -13,6 +13,7 @@ import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../app/firebase/firebaseConfig";
 import { useState, useEffect } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import { fetchUserDocumentByUid } from "../app/firebase/firebaseDatabase";
 
 interface PostProps {
   id?: string;
