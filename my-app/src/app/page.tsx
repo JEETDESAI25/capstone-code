@@ -19,13 +19,17 @@ export default function Home() {
       const postsData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        timestamp: doc.data().timestamp.toDate().toLocaleString(),
+        timestamp: doc.data().timestamp.toDate().toISOString(), // Use ISO format for consistency
       }));
       setPosts(postsData);
     });
 
     return () => unsubscribe();
   }, []);
+
+  const handlePostDelete = (postId: string) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+  };
 
   return (
     <div className={`${styles.app} ${styles.root}`}>
@@ -44,13 +48,13 @@ export default function Home() {
               <Post
                 key={post.id}
                 id={post.id}
-                username={post.username}
                 content={post.content}
                 imageUrl={post.imageUrl}
                 timestamp={post.timestamp}
                 userId={post.uid}
                 likes={post.likes}
                 likedBy={post.likedBy}
+                onDelete={handlePostDelete} // Pass the delete handler
               />
             ))}
             <Post

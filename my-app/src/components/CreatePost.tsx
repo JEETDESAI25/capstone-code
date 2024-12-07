@@ -8,7 +8,11 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../app/firebase/firebaseConfig";
 import Image from "next/image";
 
-export default function CreatePost() {
+interface CreatePostProps {
+  onPostCreate?: (post: any) => void; // Callback for new post creation
+}
+
+export default function CreatePost({ onPostCreate }: CreatePostProps) {
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -20,13 +24,11 @@ export default function CreatePost() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
         alert("File size should be less than 5MB");
         return;
       }
       setImageFile(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -43,37 +45,30 @@ export default function CreatePost() {
       let imageUrl = "";
 
       if (imageFile) {
-        // Create a storage reference
         const storageRef = ref(
           storage,
           `posts/${user.uid}/${Date.now()}_${imageFile.name}`
         );
-
-        // Upload the file
         const uploadTask = await uploadBytes(storageRef, imageFile);
-
-        // Get the download URL
         imageUrl = await getDownloadURL(uploadTask.ref);
-        console.log("Image uploaded successfully:", imageUrl);
       }
 
-      // Create the post document
       const postData = {
         uid: user.uid,
         username: user.displayName || "Anonymous",
         content: content,
         imageUrl: imageUrl,
         timestamp: Timestamp.now(),
-        likes: 0,
+        likes: [], // Initialize as an array
         likedBy: [],
       };
 
-      console.log("Creating post with data:", postData);
-
       const docRef = await addDoc(collection(db, "posts"), postData);
-      console.log("Post created with ID:", docRef.id);
 
-      // Reset form
+      if (onPostCreate) {
+        onPostCreate({ id: docRef.id, ...postData });
+      }
+
       setContent("");
       setImageFile(null);
       setImagePreview(null);

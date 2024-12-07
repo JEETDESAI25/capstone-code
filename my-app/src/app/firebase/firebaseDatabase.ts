@@ -8,11 +8,13 @@ import {
   orderBy,
   getDocs,
   updateDoc,
+  deleteDoc,
   arrayRemove,
   arrayUnion,
   increment,
 } from "firebase/firestore";
-import { db } from "./firebaseConfig";
+import { ref, deleteObject } from "firebase/storage";
+import { db, storage } from "./firebaseConfig";
 
 // Check if a user document exists
 export const userExists = async (uid: string): Promise<boolean> => {
@@ -112,24 +114,49 @@ export const updateFollowers = async (
   currentUserId: string,
   profileUserId: string
 ) => {
-  const userRef = doc(db, "users", currentUserId);
-  const profileRef = doc(db, "users", profileUserId);
+  const profileDocRef = doc(db, "users", profileUserId);
 
   if (isFollowing) {
-    await updateDoc(userRef, {
-      usersFollowing: arrayRemove(profileUserId),
-      followingCount: increment(-1),
-    });
-    await updateDoc(profileRef, {
-      followersCount: increment(-1),
+    await updateDoc(profileDocRef, {
+      followers: arrayRemove(currentUserId),
     });
   } else {
-    await updateDoc(userRef, {
-      usersFollowing: arrayUnion(profileUserId),
-      followingCount: increment(1),
+    await updateDoc(profileDocRef, {
+      followers: arrayUnion(currentUserId),
     });
-    await updateDoc(profileRef, {
-      followersCount: increment(1),
-    });
+  }
+};
+
+export const fetchUserDataById = async (userId: string) => {
+  const userDocRef = doc(db, "users", userId); // Reference to the user document
+  const userDoc = await getDoc(userDocRef);
+  return userDoc.exists() ? userDoc.data() : null;
+};
+
+// Like a post
+export const likePost = async (postId: string, userId: string) => {
+  const postRef = doc(db, "posts", postId);
+  await updateDoc(postRef, {
+    likes: arrayUnion(userId),
+  });
+};
+
+// Unlike a post
+export const unlikePost = async (postId: string, userId: string) => {
+  const postRef = doc(db, "posts", postId);
+  await updateDoc(postRef, {
+    likes: arrayRemove(userId),
+  });
+};
+
+// Delete a post and its image
+export const deletePostAndImage = async (postId: string, imageUrl: string) => {
+  if (postId) {
+    await deleteDoc(doc(db, "posts", postId));
+  }
+
+  if (imageUrl) {
+    const imageRef = ref(storage, imageUrl);
+    await deleteObject(imageRef);
   }
 };

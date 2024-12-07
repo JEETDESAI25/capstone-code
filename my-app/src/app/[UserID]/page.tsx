@@ -13,21 +13,9 @@ import {
   updateFollowers,
 } from "../firebase/firebaseDatabase";
 import LoadingScreen from "../../components/LoadingScreen";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  increment,
-} from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
-import { MdAutoGraph } from "react-icons/md";
 
 export default function ProfileDetails({
   params,
@@ -49,21 +37,32 @@ export default function ProfileDetails({
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
+  const [isProcessingFollow, setIsProcessingFollow] = useState(false);
+
   const auth = getAuth();
 
   const handleFollow = async () => {
-    if (!auth.currentUser) return;
+    if (!auth.currentUser || isProcessingFollow) return;
 
+    setIsProcessingFollow(true);
     try {
       const currentUserId = auth.currentUser.uid;
       const profileUserId = params.UserID;
 
       await updateFollowers(isFollowing, currentUserId, profileUserId);
       setIsFollowing(!isFollowing);
-      setFollowerCount((prev) => (isFollowing ? prev - 1 : prev + 1));
+
+      const updatedUser = await fetchDocumentById("users", profileUserId);
+      setFollowerCount(updatedUser.followers?.length || 0);
     } catch (error) {
       console.error("Error updating follow status:", error);
+    } finally {
+      setIsProcessingFollow(false);
     }
+  };
+
+  const handlePostDelete = (postId: string) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
   };
 
   useEffect(() => {
@@ -76,6 +75,8 @@ export default function ProfileDetails({
             email: auth.currentUser.email,
             profilePicture: auth.currentUser.photoURL || default_pfp,
             bio: "",
+            followers: [],
+            followingCount: 0,
           };
           await createUserDocument(params.UserID, newUserData);
           userData = newUserData;
@@ -87,6 +88,8 @@ export default function ProfileDetails({
             profilePicture: userData.profilePicture || default_pfp,
             email: userData.email,
           });
+          setFollowerCount(userData.followers?.length || 0);
+          setIsFollowing(userData.followers?.includes(auth.currentUser.uid));
         }
 
         const postsRef = collection(db, "posts");
@@ -95,17 +98,9 @@ export default function ProfileDetails({
         const userPosts = postsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-          timestamp: doc.data().timestamp.toDate().toLocaleString(),
+          timestamp: doc.data().timestamp.toDate().toISOString(),
         }));
         setPosts(userPosts);
-
-        const followers = userData.followersCount || [];
-        setFollowerCount(followers);
-
-        console.log(followers);
-        console.log(userData.usersFollowing);
-
-        setIsFollowing(followers.includes(auth.currentUser.uid));
       } catch (error) {
         console.error("Error fetching user profile:", error);
       } finally {
@@ -130,7 +125,7 @@ export default function ProfileDetails({
         const likedPostsData = likedPostsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-          timestamp: doc.data().timestamp.toDate().toLocaleString(),
+          timestamp: doc.data().timestamp.toDate().toISOString(),
         }));
         setLikedPosts(likedPostsData);
       } catch (error) {
@@ -150,7 +145,7 @@ export default function ProfileDetails({
         <Navbar />
         <div className={styles.mainContent}>
           <SidePanel />
-          <div className={styles.notFound}>User not found</div>;
+          <div className={styles.notFound}>User not found</div>
         </div>
       </div>
     );
@@ -174,9 +169,6 @@ export default function ProfileDetails({
               />
               <div className={styles.userDetails}>
                 <h2 className={styles.username}>{user.username}</h2>
-                <p className={styles.email}>
-                  {user.email || "No email provided"}
-                </p>
                 <p className={styles.bio}>{user.bio || "No bio yet"}</p>
                 {auth.currentUser && auth.currentUser.uid !== params.UserID && (
                   <button
@@ -225,8 +217,31 @@ export default function ProfileDetails({
           </div>
           <div className={styles.postsContainer}>
             {activeTab === "posts"
-              ? posts.map((post) => <Post key={post.id} {...post} />)
-              : likedPosts.map((post) => <Post key={post.id} {...post} />)}
+              ? posts.map((post) => (
+                  <Post
+                    key={post.id}
+                    id={post.id}
+                    content={post.content}
+                    imageUrl={post.imageUrl}
+                    timestamp={post.timestamp}
+                    userId={post.uid}
+                    likes={post.likes}
+                    likedBy={post.likedBy}
+                    onDelete={handlePostDelete}
+                  />
+                ))
+              : likedPosts.map((post) => (
+                  <Post
+                    key={post.id}
+                    id={post.id}
+                    content={post.content}
+                    imageUrl={post.imageUrl}
+                    timestamp={post.timestamp}
+                    userId={post.uid}
+                    likes={post.likes}
+                    likedBy={post.likedBy}
+                  />
+                ))}
           </div>
         </main>
       </div>
