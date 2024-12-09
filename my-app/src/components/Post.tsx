@@ -20,6 +20,7 @@ interface PostProps {
   userId?: string;
   likes?: number[];
   likedBy?: string[];
+  username?: string; // New prop to display username
   onDelete?: (id: string) => void; // New prop to handle deletion in the parent component
 }
 
@@ -29,6 +30,7 @@ export default function Post({
   imageUrl,
   timestamp,
   userId,
+  username,
   likes = [],
   likedBy = [],
   onDelete, // Add onDelete to destructured props
@@ -37,7 +39,9 @@ export default function Post({
   const isOwner = userId ? auth.currentUser?.uid === userId : false;
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(likes.length);
-  const [dbUsername, setDbUsername] = useState<string | null>(null);
+  const [dbUsername, setDbUsername] = useState<string>(
+    username || "Unknown User"
+  );
   const [profilePic, setProfilePic] = useState<string>(default_pfp.src);
   const [relativeTime, setRelativeTime] = useState<string>("");
 
