@@ -1,0 +1,223 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(29, 29, 29, 0.95);
+  z-index: 1000;
+}
+
+.modalContainer {
+  width: 100vw;
+  height: 100vh;
+  background-color: #1d1d1d;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  background-color: #2a2a2a;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+}
+
+.modalHeader h2 {
+  color: #7ceed3;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  color: #fff;
+}
+
+.modalBody {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.createPostBox {
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.postInput {
+  width: 100%;
+  min-height: 100px;
+  background-color: #1d1d1d;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+
+.postActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.fileInput {
+  display: none;
+}
+
+.fileInputLabel {
+  background-color: #7ceed3;
+  color: #141414;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.fileInputLabel:hover {
+  background-color: #6ad1c0;
+}
+
+.postButton {
+  background-color: #7ceed3;
+  color: #141414;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.postButton:hover {
+  background-color: #6ad1c0;
+}
+
+/* Posts */
+.postsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.postCard {
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.postHeader {
+  display: flex;
+  justify-content: space-between;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.postContent {
+  color: #e0e0e0;
+}
+
+.postImage {
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.postImage img {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+}
+
+.postActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.likeButton,
+.commentButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s;
+}
+
+.likeButton:hover,
+.commentButton:hover {
+  color: #7ceed3;
+}
+
+.liked {
+  color: #ff4444;
+}
+
+/* Comments */
+.commentSection {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #1d1d1d;
+  border-radius: 8px;
+}
+
+.comments {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.comment {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #333;
+}
+
+.commentAuthor {
+  color: #7ceed3;
+  font-size: 0.9rem;
+}
+
+.commentInput {
+  width: 100%;
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.commentSubmit {
+  background-color: #7ceed3;
+  color: #141414;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+}

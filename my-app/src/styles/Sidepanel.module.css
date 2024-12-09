@@ -30,20 +30,26 @@
 }
 
 .sidePanel li {
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
+  margin: 8px 0;
+}
+
+.navLink {
+  display: block;
   color: #fff;
-  font-size: 18px;
-  font-weight: 500;
-  cursor: pointer;
-  margin-bottom: 5px;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 12px 24px;
+  transition: all 0.2s ease;
+  opacity: 0.8;
 }
 
 .sidePanel li:hover {
   background-color: #2f2f2f;
 }
 
-.sidePanel li svg {
-  margin-right: 10px;
+.navLink.active {
+  color: #7ceed3;
+  opacity: 1;
+  background-color: rgba(124, 238, 211, 0.1);
+  border-left: 3px solid #7ceed3;
 }

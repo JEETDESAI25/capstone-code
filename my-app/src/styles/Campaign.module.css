@@ -1,0 +1,156 @@
+.app {
+  min-height: 100vh;
+  background-color: #141414;
+  color: #ffffff;
+}
+
+.mainContent {
+  display: flex;
+  padding-top: 60px;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 240px;
+}
+
+.campaignHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.campaignHeader h1 {
+  color: #7ceed3;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.createButton {
+  background-color: #7ceed3;
+  color: #141414;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.createButton:hover {
+  background-color: #6ad1c0;
+}
+
+.campaignsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.createCampaignModal {
+  background-color: #1d1d1d;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modalHeader h2 {
+  color: #7ceed3;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.createForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.8rem;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.formGroup textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancelButton {
+  background-color: transparent;
+  border: 1px solid #333;
+  color: #888;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.submitButton {
+  background-color: #7ceed3;
+  color: #141414;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

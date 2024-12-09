@@ -1,0 +1,104 @@
+/* src/styles/CreateCampaignForm.module.css */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(29, 29, 29, 0.95);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.createCampaignModal {
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalHeader h2 {
+  color: #7ceed3;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  color: #fff;
+}
+
+.createForm {
+  margin-top: 1.5rem;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  width: 100%;
+  background-color: #1d1d1d;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 0.8rem;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.cancelButton {
+  background-color: transparent;
+  color: #888;
+  border: 1px solid #888;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: rgba(136, 136, 136, 0.1);
+}
+
+.submitButton {
+  background-color: #7ceed3;
+  color: #141414;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #6ad1c0;
+}
