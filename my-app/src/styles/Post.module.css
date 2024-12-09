@@ -69,6 +69,7 @@
 
 .timestamp {
   padding-left: 10px;
+  color: lightgray;
 }
 
 .likeButton {
@@ -96,4 +97,9 @@
 .likeButton span {
   font-size: 0.9rem;
   color: #e0e0e0;
+}
+
+.username {
+  color: white;
+  font-weight: bold;
 }

@@ -20,13 +20,14 @@
 
 .mainContent {
   display: flex;
-  flex: 1;
-  gap: 0;
-  position: relative;
-  height: calc(100vh - 60px);
+  margin-top: 80px; /* Matches the navbar's height */
+  height: calc(100vh - 60px); /* Ensures the content fits below the navbar */
+  overflow-y: hidden;
+  position: fixed;
 }
 
 .content {
+  margin-left: 150px; /* Matches the side panel's width */
   flex: 1;
   padding: 20px;
   overflow-y: auto;

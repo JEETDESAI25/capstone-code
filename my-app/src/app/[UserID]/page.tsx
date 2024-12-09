@@ -16,6 +16,7 @@ import LoadingScreen from "../../components/LoadingScreen";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
+import { MdAutoGraph } from "react-icons/md";
 
 export default function ProfileDetails({
   params,
@@ -42,9 +43,9 @@ export default function ProfileDetails({
   const auth = getAuth();
 
   const handleFollow = async () => {
-    if (!auth.currentUser || isProcessingFollow) return;
+    if (!auth.currentUser || isProcessingFollow) return; // Prevent double clicks
 
-    setIsProcessingFollow(true);
+    setIsProcessingFollow(true); // Lock button during execution
     try {
       const currentUserId = auth.currentUser.uid;
       const profileUserId = params.UserID;
@@ -52,17 +53,14 @@ export default function ProfileDetails({
       await updateFollowers(isFollowing, currentUserId, profileUserId);
       setIsFollowing(!isFollowing);
 
+      // Re-fetch followers to update the count
       const updatedUser = await fetchDocumentById("users", profileUserId);
       setFollowerCount(updatedUser.followers?.length || 0);
     } catch (error) {
       console.error("Error updating follow status:", error);
     } finally {
-      setIsProcessingFollow(false);
+      setIsProcessingFollow(false); // Unlock button
     }
-  };
-
-  const handlePostDelete = (postId: string) => {
-    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
   };
 
   useEffect(() => {
@@ -75,7 +73,7 @@ export default function ProfileDetails({
             email: auth.currentUser.email,
             profilePicture: auth.currentUser.photoURL || default_pfp,
             bio: "",
-            followers: [],
+            followers: [], // Initialize as an empty array
             followingCount: 0,
           };
           await createUserDocument(params.UserID, newUserData);
@@ -98,7 +96,7 @@ export default function ProfileDetails({
         const userPosts = postsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-          timestamp: doc.data().timestamp.toDate().toISOString(),
+          timestamp: doc.data().timestamp.toDate().toLocaleString(),
         }));
         setPosts(userPosts);
       } catch (error) {
@@ -125,7 +123,7 @@ export default function ProfileDetails({
         const likedPostsData = likedPostsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-          timestamp: doc.data().timestamp.toDate().toISOString(),
+          timestamp: doc.data().timestamp.toDate().toLocaleString(),
         }));
         setLikedPosts(likedPostsData);
       } catch (error) {
@@ -145,7 +143,7 @@ export default function ProfileDetails({
         <Navbar />
         <div className={styles.mainContent}>
           <SidePanel />
-          <div className={styles.notFound}>User not found</div>
+          <div className={styles.notFound}>User not found</div>;
         </div>
       </div>
     );
@@ -224,10 +222,9 @@ export default function ProfileDetails({
                     content={post.content}
                     imageUrl={post.imageUrl}
                     timestamp={post.timestamp}
-                    userId={post.uid}
+                    userId={post.uid} // Pass the userId here as well
                     likes={post.likes}
                     likedBy={post.likedBy}
-                    onDelete={handlePostDelete}
                   />
                 ))
               : likedPosts.map((post) => (
@@ -237,7 +234,7 @@ export default function ProfileDetails({
                     content={post.content}
                     imageUrl={post.imageUrl}
                     timestamp={post.timestamp}
-                    userId={post.uid}
+                    userId={post.uid} // Pass the userId here as well
                     likes={post.likes}
                     likedBy={post.likedBy}
                   />
