@@ -49,12 +49,18 @@ export default function CampaignDetails({
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState("");
   const [postImage, setPostImage] = useState<File | null>(null);
+  const [newComment, setNewComment] = useState("");
   const user = auth.currentUser;
   const [isClosing, setIsClosing] = useState(false);
   const [activeCommentPost, setActiveCommentPost] = useState<string | null>(
     null
   );
   const [newMember, setNewMember] = useState("");
+
+  const loadPosts = async () => {
+    const fetchedPosts = await fetchCampaignPosts(campaign.id);
+    setPosts(fetchedPosts);
+  };
 
   useEffect(() => {
     loadPosts();
@@ -64,20 +70,11 @@ export default function CampaignDetails({
     };
   }, [campaign.id]);
 
-  const handleContainerClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
       onClose();
     }, 200);
-  };
-
-  const loadPosts = async () => {
-    const fetchedPosts = await fetchCampaignPosts(campaign.id);
-    setPosts(fetchedPosts);
   };
 
   const handleCreatePost = async () => {
@@ -149,11 +146,11 @@ export default function CampaignDetails({
         onClick={(e) => e.stopPropagation()}
       >
         <header className={styles.modalHeader}>
-          <div className={styles.modalHeaderContent}>
-            <h2>{campaign.title}</h2>
-            <span className={styles.categoryTag}>{campaign.category}</span>
+          <div className={styles.headerContent}>
+            <h2>Save Earth!</h2>
+            <p>Environmental</p>
           </div>
-          <button className={styles.closeButton} onClick={handleClose}>
+          <button className={styles.closeButton} onClick={onClose}>
             ×
           </button>
         </header>

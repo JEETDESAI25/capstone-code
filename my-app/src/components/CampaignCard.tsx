@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { auth } from "../app/firebase/firebaseConfig";
 import styles from "../styles/CampaignCard.module.css";
-import Image from "next/image";
 import { FaUsers, FaCalendarAlt } from "react-icons/fa";
 
 interface CampaignCardProps {

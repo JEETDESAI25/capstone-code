@@ -4,124 +4,128 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(29, 29, 29, 0.95);
+  background-color: rgba(20, 20, 20, 0.98);
   z-index: 1000;
 }
 
 .modalContainer {
   width: 100vw;
   height: 100vh;
-  background-color: #1d1d1d;
   display: flex;
   flex-direction: column;
 }
 
 .modalHeader {
-  background-color: #2a2a2a;
-  padding: 1rem 2rem;
+  background-color: #1a1a1a;
+  padding: 1.2rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #2a2a2a;
 }
 
 .modalHeader h2 {
   color: #7ceed3;
+  font-size: 1.8rem;
+  font-weight: 500;
   margin: 0;
 }
 
-.closeButton {
-  background: none;
-  border: none;
+.modalHeader p {
   color: #888;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.closeButton:hover {
-  color: #fff;
+  font-size: 1rem;
+  margin: 0.3rem 0 0 0;
 }
 
 .modalBody {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  height: calc(100vh - 70px);
 }
 
 .mainContent {
-  flex: 1;
   padding: 2rem;
+  background-color: #141414;
   overflow-y: auto;
 }
 
 .createPostBox {
-  background-color: #2a2a2a;
-  border-radius: 12px;
+  background-color: #1a1a1a;
+  border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .postInput {
   width: 100%;
-  min-height: 100px;
-  background-color: #1d1d1d;
-  border: 1px solid #333;
-  border-radius: 8px;
+  min-height: 120px;
+  background-color: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
   color: #ffffff;
   padding: 1rem;
-  margin-bottom: 1rem;
   resize: vertical;
+  font-size: 1rem;
+  margin-bottom: 1rem;
 }
 
-.postActions {
+.postInput:focus {
+  outline: none;
+  border-color: #7ceed3;
+}
+
+.fileInputContainer {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
   align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
 }
 
-.fileInput {
-  display: none;
-}
-
-.fileInputLabel {
-  background-color: #7ceed3;
-  color: #141414;
+.chooseFileButton {
+  background-color: rgba(124, 238, 211, 0.1);
+  color: #7ceed3;
+  border: 1px solid #7ceed3;
   padding: 0.6rem 1.2rem;
   border-radius: 20px;
-  font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
-.fileInputLabel:hover {
-  background-color: #6ad1c0;
+.chooseFileButton:hover {
+  background-color: rgba(124, 238, 211, 0.2);
+}
+
+.fileLabel {
+  color: #888;
+  font-size: 0.9rem;
 }
 
 .postButton {
   background-color: #7ceed3;
   color: #141414;
   border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  cursor: pointer;
+  padding: 0.8rem 1.5rem;
+  border-radius: 24px;
   font-weight: 500;
-  transition: background-color 0.2s;
+  cursor: pointer;
+  transition: all 0.2s;
+  float: right;
 }
 
 .postButton:hover {
   background-color: #6ad1c0;
 }
 
-/* Posts */
-.postsContainer {
+.posts {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.postCard {
-  background-color: #2a2a2a;
+.post {
+  background-color: #1a1a1a;
   border-radius: 12px;
   padding: 1.5rem;
 }
@@ -129,31 +133,23 @@
 .postHeader {
   display: flex;
   justify-content: space-between;
-  color: #888;
+  align-items: center;
   margin-bottom: 1rem;
+  color: #7ceed3;
+  font-size: 0.9rem;
 }
 
 .postContent {
   color: #e0e0e0;
-}
-
-.postImage {
-  margin-top: 1rem;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.postImage img {
-  width: 100%;
-  height: auto;
-  max-height: 400px;
-  object-fit: cover;
+  margin-bottom: 1rem;
+  line-height: 1.6;
 }
 
 .postActions {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2a2a2a;
 }
 
 .likeButton,
@@ -161,12 +157,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: #888;
   background: none;
   border: none;
-  color: #888;
   cursor: pointer;
   padding: 0.5rem;
-  transition: color 0.2s;
+  transition: all 0.2s;
+  font-size: 0.9rem;
 }
 
 .likeButton:hover,
@@ -174,50 +171,107 @@
   color: #7ceed3;
 }
 
-.liked {
-  color: #ff4444;
-}
-
-/* Comments */
-.commentSection {
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: #1d1d1d;
-  border-radius: 8px;
-}
-
-.comments {
-  max-height: 200px;
-  overflow-y: auto;
-  margin-bottom: 1rem;
-}
-
-.comment {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #333;
-}
-
-.commentAuthor {
-  color: #7ceed3;
+.likeButton span,
+.commentButton span {
+  color: #888;
   font-size: 0.9rem;
 }
 
-.commentInput {
-  width: 100%;
-  background-color: #2a2a2a;
-  border: 1px solid #333;
-  border-radius: 8px;
-  color: #ffffff;
-  padding: 0.8rem;
-  margin-bottom: 0.5rem;
+.liked {
+  color: #7ceed3;
 }
 
-.commentSubmit {
-  background-color: #7ceed3;
-  color: #141414;
-  border: none;
-  padding: 0.6rem 1.2rem;
+.sidebar {
+  background-color: #1a1a1a;
+  border-left: 1px solid #2a2a2a;
+  padding: 2rem;
+}
+
+.aboutSection {
+  margin-bottom: 2.5rem;
+}
+
+.aboutSection h3,
+.membersSection h3 {
+  color: #7ceed3;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.aboutContent {
+  color: #e0e0e0;
+  line-height: 1.6;
+}
+
+.addMemberForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.addMemberInput {
+  flex: 1;
+  background-color: rgba(124, 238, 211, 0.1);
+  border: 1px solid #7ceed3;
+  border-radius: 20px;
+  padding: 0.8rem 1.2rem;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.addMemberInput:focus {
+  outline: none;
+  background-color: rgba(124, 238, 211, 0.15);
+}
+
+.addButton {
+  background-color: rgba(124, 238, 211, 0.1);
+  color: #7ceed3;
+  border: 1px solid #7ceed3;
+  padding: 0.8rem 1.2rem;
   border-radius: 20px;
   cursor: pointer;
   font-weight: 500;
+  transition: all 0.2s;
+}
+
+.addButton:hover {
+  background-color: rgba(124, 238, 211, 0.2);
+}
+
+.membersList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.memberCard {
+  background-color: #141414;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #7ceed3;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+  line-height: 1;
+  margin-left: auto;
+}
+
+.closeButton:hover {
+  color: #6ad1c0;
+  background-color: rgba(124, 238, 211, 0.1);
 }

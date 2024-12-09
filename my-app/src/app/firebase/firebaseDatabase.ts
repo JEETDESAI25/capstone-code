@@ -13,8 +13,30 @@ import {
   arrayUnion,
   addDoc,
 } from "firebase/firestore";
-import { ref, deleteObject } from "firebase/storage";
+import {
+  ref,
+  deleteObject,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 import { db, storage } from "./firebaseConfig";
+
+interface Post {
+  id: string;
+  content: string;
+  userId: string;
+  createdAt: string;
+  likes: string[];
+  comments: Comment[];
+  imageUrl?: string;
+}
+
+interface Comment {
+  id: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+}
 
 // Check if a user document exists
 export const userExists = async (uid: string): Promise<boolean> => {
@@ -26,7 +48,7 @@ export const userExists = async (uid: string): Promise<boolean> => {
 // Create or update a user document in the "users" collection
 export const createUserDocument = async (
   uid: string,
-  userData: Record<string, any>
+  userData: Record<string, string | number | boolean | null>
 ) => {
   try {
     const userRef = doc(db, "users", uid); // Reference to the user's document
@@ -54,12 +76,16 @@ export const fetchDocumentById = async (collection: string, id: string) => {
   }
 };
 
-export const formatTimestamp = (timestamp: any) => {
+export const formatTimestamp = (
+  timestamp: {
+    toDate: () => Date;
+  } | null
+) => {
   if (!timestamp) return "";
 
   const date = timestamp.toDate();
   const now = new Date();
-  const diffInSeconds = Math.floor((now - date) / 1000);
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) return "just now";
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
@@ -281,12 +307,26 @@ export const createCampaignPost = async (
     content: string;
     userId: string;
     imageUrl?: string;
+    imageFile?: File;
   }
 ) => {
   try {
     const postsRef = collection(db, "campaigns", campaignId, "posts");
+    const { imageFile, ...postDataWithoutFile } = postData;
+    let imageUrl;
+
+    if (imageFile) {
+      const storageRef = ref(
+        storage,
+        `campaigns/${campaignId}/posts/${Date.now()}_${imageFile.name}`
+      );
+      await uploadBytes(storageRef, imageFile);
+      imageUrl = await getDownloadURL(storageRef);
+    }
+
     const newPost = {
-      ...postData,
+      ...postDataWithoutFile,
+      imageUrl,
       createdAt: new Date().toISOString(),
       likes: [],
     };
@@ -299,15 +339,27 @@ export const createCampaignPost = async (
   }
 };
 
-export const fetchCampaignPosts = async (campaignId: string) => {
+export const fetchCampaignPosts = async (
+  campaignId: string
+): Promise<Post[]> => {
   try {
     const postsRef = collection(db, "campaigns", campaignId, "posts");
     const q = query(postsRef, orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
 
-    return querySnapshot.docs.map((doc) => ({
+    const posts = querySnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as Omit<Post, "id">),
+    }));
+
+    return posts.map((post) => ({
+      id: post.id,
+      content: post.content || "",
+      userId: post.userId || "",
+      createdAt: post.createdAt || "",
+      likes: post.likes || [],
+      comments: post.comments || [],
+      imageUrl: post.imageUrl,
     }));
   } catch (error) {
     console.error("Error fetching posts:", error);
