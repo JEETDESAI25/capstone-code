@@ -1,23 +1,26 @@
 .sidePanelContainer {
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 80px); /* Excludes navbar height */
   overflow: hidden;
   background-color: #1d1d1d;
   border-right: 1px solid white;
   box-sizing: border-box;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  width: 150px;
+  z-index: 999;
 }
 
 .sidePanel {
-  width: 250px;
-  background-color: #141414;
-  padding: 20px;
-  border-right: 1px solid #2f2f2f;
-  width: 150px;
-  overflow-y: auto;
+  position: fixed; /* Keeps the side panel fixed */
+  top: 80px; /* Matches the navbar height */
+  left: 0;
+  width: 150px; /* Same width as on the homepage */
+  height: calc(100vh - 60px); /* Fills the height below the navbar */
   background-color: #1d1d1d;
-  padding: 30px 20px;
-  color: white;
-  border-right: 1px solid white;
+  z-index: 999;
+  overflow: hidden; /* Prevents internal scrolling */
 }
 
 .sidePanel ul {
@@ -37,7 +40,7 @@
   margin-bottom: 5px;
 }
 
-.sidepanel li:hover {
+.sidePanel li:hover {
   background-color: #2f2f2f;
 }
 

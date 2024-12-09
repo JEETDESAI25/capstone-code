@@ -24,7 +24,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 10px;
   z-index: 1000;
-  min-width: 50px;
+  min-width: 100px;
 }
 
 .dropdownButton {
@@ -35,10 +35,9 @@
   cursor: pointer;
   border-radius: 4px;
   text-align: center;
-  white-space: nowrap;
-  width: auto;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.3s ease;
   margin-bottom: 5px;
+  text-wrap: nowrap;
 }
 
 .signoutButton {
@@ -50,8 +49,6 @@
   cursor: pointer;
   border-radius: 4px;
   text-align: center;
-  white-space: nowrap;
-  width: auto;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -65,59 +62,52 @@
   transform: scale(0.95);
 }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  z-index: 999;
-}
-
-.popup {
+.setupModal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
+  background-color: #141414;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  width: 90%;
-  max-width: 300px;
-  z-index: 1000;
-  text-align: center;
-  background-color: #141414;
   border: 1px solid white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
 }
 
-.popup h2 {
+.setupModal h2 {
   font-size: 18px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+  color: white;
 }
 
-.inputField,
-.textArea {
-  width: 100%;
-  margin-bottom: 15px;
+.usernameInput,
+.bioInput,
+.fileInput {
+  margin-top: 10px;
   padding: 10px;
+  width: 100%;
   border: 1px solid #ccc;
   border-radius: 4px;
+  background-color: #1a1a1a;
+  color: white;
   font-size: 14px;
   box-sizing: border-box;
 }
 
-.textArea {
+.bioInput {
   resize: none;
   height: 80px;
 }
 
-.popupButton {
+.submitButton {
+  margin-top: 10px;
+  padding: 10px 15px;
   background-color: #7ceed3;
   color: black;
-  padding: 10px 15px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -125,10 +115,18 @@
   width: 100%;
 }
 
-.popupButton:hover {
+.submitButton:hover {
   background-color: #61baa5;
 }
 
-.popupButton:active {
+.submitButton:active {
   background-color: #4a8c7c;
+}
+
+.previewImage {
+  margin-top: 10px;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
 }
