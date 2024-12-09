@@ -40,7 +40,7 @@ export default function Home() {
           <div className={styles.filters}>
             <h1 className={styles.filter}>Home</h1>
             <h1 className={styles.filter}>Following</h1>
-            <h1 className={styles.filter}>For You</h1>
+            <h1 className={styles.filter}>Campaign</h1>
           </div>
           <CreatePost />
           <div className={styles.postsContainer}>
