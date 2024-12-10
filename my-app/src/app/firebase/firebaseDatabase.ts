@@ -20,6 +20,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { db, storage } from "./firebaseConfig";
+import { v4 as uuidv4 } from "uuid";
 
 interface Post {
   id: string;
@@ -59,20 +60,23 @@ export const createUserDocument = async (
   }
 };
 
-export const fetchDocumentById = async (collection: string, id: string) => {
+export const fetchDocumentById = async (
+  collection: string,
+  id: string
+): Promise<any> => {
   try {
-    const docRef = doc(db, collection, id); // Reference to the document
-    const docSnapshot = await getDoc(docRef); // Fetch the document
+    const docRef = doc(db, collection, id);
+    const docSnapshot = await getDoc(docRef);
 
     if (docSnapshot.exists()) {
-      return { id: docSnapshot.id, ...docSnapshot.data() }; // Return the document data with the ID
+      return { id: docSnapshot.id, ...docSnapshot.data() };
     } else {
       console.log("Document not found");
       return null;
     }
   } catch (error) {
     console.error("Error fetching document:", error);
-    throw error; // Propagate the error for handling
+    throw error;
   }
 };
 
@@ -306,36 +310,69 @@ export const createCampaignPost = async (
   postData: {
     content: string;
     userId: string;
-    imageUrl?: string;
-    imageFile?: File;
+    imageFile?: File | null;
   }
 ) => {
   try {
+    console.log("Starting post creation for campaign:", campaignId);
     const postsRef = collection(db, "campaigns", campaignId, "posts");
     const { imageFile, ...postDataWithoutFile } = postData;
-    let imageUrl;
+    let uploadedImageUrl: string | undefined;
 
     if (imageFile) {
+      console.log("Starting image upload...", {
+        fileName: imageFile.name,
+        fileSize: imageFile.size,
+        fileType: imageFile.type,
+      });
+
+      // Create a unique file name to prevent collisions
+      const timestamp = Date.now();
+      const uniqueFileName = `${timestamp}_${imageFile.name.replace(
+        /[^a-zA-Z0-9.]/g,
+        "_"
+      )}`;
+
       const storageRef = ref(
         storage,
-        `campaigns/${campaignId}/posts/${Date.now()}_${imageFile.name}`
+        `campaigns/${campaignId}/posts/${uniqueFileName}`
       );
-      await uploadBytes(storageRef, imageFile);
-      imageUrl = await getDownloadURL(storageRef);
+
+      try {
+        // Upload the image
+        const uploadResult = await uploadBytes(storageRef, imageFile);
+        console.log("Image upload response:", uploadResult);
+
+        // Get the download URL
+        uploadedImageUrl = await getDownloadURL(uploadResult.ref);
+        console.log("Image URL obtained:", uploadedImageUrl);
+      } catch (uploadError) {
+        console.error("Error during image upload:", uploadError);
+        throw new Error("Failed to upload image. Please try again.");
+      }
     }
 
+    // Prepare the post data
     const newPost = {
       ...postDataWithoutFile,
-      imageUrl,
       createdAt: new Date().toISOString(),
       likes: [],
+      comments: [],
+      ...(uploadedImageUrl ? { imageUrl: uploadedImageUrl } : {}),
     };
 
-    await addDoc(postsRef, newPost);
-    return newPost;
+    console.log("Creating new post with data:", newPost);
+    const docRef = await addDoc(postsRef, newPost);
+    console.log("Post created successfully with ID:", docRef.id);
+
+    return { id: docRef.id, ...newPost };
   } catch (error) {
-    console.error("Error creating post:", error);
-    throw error;
+    console.error("Detailed error in createCampaignPost:", error);
+    if (error instanceof Error) {
+      throw new Error(`Failed to create post: ${error.message}`);
+    } else {
+      throw new Error("Failed to create post: Unknown error occurred");
+    }
   }
 };
 
@@ -446,6 +483,12 @@ export const fetchUserCampaigns = async (
   }
 };
 
-function uuidv4() {
-  throw new Error("Function not implemented.");
-}
+export const getUsernameById = async (userId: string) => {
+  try {
+    const userDoc = await fetchDocumentById("users", userId);
+    return userDoc?.username || userId; // Fallback to ID if username not found
+  } catch (error) {
+    console.error("Error fetching username:", error);
+    return userId; // Fallback to ID on error
+  }
+};

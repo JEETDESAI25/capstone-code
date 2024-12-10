@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { auth } from "../app/firebase/firebaseConfig";
 import {
   fetchCampaignPosts,
@@ -6,9 +6,10 @@ import {
   likePost,
   addComment,
   addMemberByUsername,
+  getUsernameById,
 } from "../app/firebase/firebaseDatabase";
 import styles from "../styles/CampaignDetails.module.css";
-import { FaHeart, FaRegHeart, FaComment } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 interface CampaignDetailsProps {
   campaign: {
@@ -22,6 +23,7 @@ interface CampaignDetailsProps {
   };
   onClose: () => void;
   isCreator: boolean;
+  onUpdate?: () => void;
 }
 
 interface Post {
@@ -45,21 +47,34 @@ export default function CampaignDetails({
   campaign,
   onClose,
   isCreator,
+  onUpdate,
 }: CampaignDetailsProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState("");
   const [postImage, setPostImage] = useState<File | null>(null);
-  const [newComment, setNewComment] = useState("");
-  const user = auth.currentUser;
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [user] = useState(auth.currentUser);
   const [isClosing, setIsClosing] = useState(false);
-  const [activeCommentPost, setActiveCommentPost] = useState<string | null>(
-    null
-  );
   const [newMember, setNewMember] = useState("");
+  const [addMemberError, setAddMemberError] = useState<string>("");
+  const [isAddingMember, setIsAddingMember] = useState(false);
+  const [memberUsernames, setMemberUsernames] = useState<{
+    [key: string]: string;
+  }>({});
+  const postButtonRef = useRef<HTMLButtonElement>(null);
 
   const loadPosts = async () => {
-    const fetchedPosts = await fetchCampaignPosts(campaign.id);
-    setPosts(fetchedPosts);
+    try {
+      const fetchedPosts = await fetchCampaignPosts(campaign.id);
+      setPosts(
+        fetchedPosts.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+      );
+    } catch (error) {
+      console.error("Error loading posts:", error);
+    }
   };
 
   useEffect(() => {
@@ -70,6 +85,19 @@ export default function CampaignDetails({
     };
   }, [campaign.id]);
 
+  useEffect(() => {
+    const fetchUsernames = async () => {
+      const usernamesMap: { [key: string]: string } = {};
+      for (const memberId of campaign.members) {
+        const username = await getUsernameById(memberId);
+        usernamesMap[memberId] = username;
+      }
+      setMemberUsernames(usernamesMap);
+    };
+
+    fetchUsernames();
+  }, [campaign.members]);
+
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
@@ -77,27 +105,119 @@ export default function CampaignDetails({
     }, 200);
   };
 
-  const handleCreatePost = async () => {
-    if (!user || (!newPost.trim() && !postImage)) return;
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    console.log("handleImageUpload triggered", { file });
+
+    if (!file) {
+      console.log("No file selected");
+      setPostImage(null);
+      setImagePreviewUrl(null);
+      return;
+    }
+
+    console.log("File details:", {
+      name: file.name,
+      size: file.size,
+      type: file.type
+    });
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('File is too large. Please select an image under 5MB');
+      return;
+    }
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreviewUrl(previewUrl);
+    setPostImage(file);
+    console.log("Image file set successfully with preview URL");
+  };
+
+  // Clean up preview URL when component unmounts or image changes
+  useEffect(() => {
+    return () => {
+      if (imagePreviewUrl) {
+        URL.revokeObjectURL(imagePreviewUrl);
+      }
+    };
+  }, [imagePreviewUrl]);
+
+  const handleCreatePost = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user) {
+      alert("You must be logged in to post");
+      return;
+    }
+    if (!newPost.trim() && !postImage) {
+      alert("Please enter some content or choose an image");
+      return;
+    }
 
     try {
-      await createCampaignPost(campaign.id, {
+      console.log("Starting post creation...", {
+        content: newPost,
+        userId: user.uid,
+        campaignId: campaign.id,
+        hasImage: !!postImage,
+        imageDetails: postImage
+          ? {
+              name: postImage.name,
+              size: postImage.size,
+              type: postImage.type,
+            }
+          : null,
+      });
+
+      // Show loading state
+      if (postButtonRef.current) {
+        postButtonRef.current.disabled = true;
+        postButtonRef.current.textContent = "Posting...";
+      }
+
+      const result = await createCampaignPost(campaign.id, {
         content: newPost,
         userId: user.uid,
         imageFile: postImage,
       });
+
+      console.log("Post created successfully:", result);
+
+      // Clear form
       setNewPost("");
       setPostImage(null);
-      loadPosts();
-    } catch (error) {
-      console.error("Error creating post:", error);
-    }
-  };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPostImage(file);
+      // Reset file input
+      const fileInput = document.getElementById(
+        "file-upload"
+      ) as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = "";
+      }
+
+      // Reload posts
+      await loadPosts();
+    } catch (error) {
+      console.error("Error in handleCreatePost:", error);
+      let errorMessage = "Failed to create post. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      alert(errorMessage);
+    } finally {
+      // Reset button state
+      if (postButtonRef.current) {
+        postButtonRef.current.disabled = false;
+        postButtonRef.current.textContent = "Post";
+      }
     }
   };
 
@@ -126,13 +246,35 @@ export default function CampaignDetails({
 
   const handleAddMember = async () => {
     if (!newMember.trim()) return;
+
+    setIsAddingMember(true);
+    setAddMemberError("");
+
     try {
+      // Check if member is already in the campaign
+      if (campaign.members.includes(newMember)) {
+        setAddMemberError("User is already a member of this campaign");
+        return;
+      }
+
       await addMemberByUsername(campaign.id, newMember);
       setNewMember("");
-      // Optionally refresh campaign data to show new member
-      // You might want to add a callback to refresh the campaign data from the parent
+
+      // Refresh campaign data
+      if (onUpdate) {
+        onUpdate();
+      }
+
+      // Optionally show success message
+      // You might want to add a success state to show this
     } catch (error) {
-      console.error("Error adding member:", error);
+      if (error instanceof Error) {
+        setAddMemberError(error.message);
+      } else {
+        setAddMemberError("Failed to add member. Please try again.");
+      }
+    } finally {
+      setIsAddingMember(false);
     }
   };
 
@@ -147,8 +289,8 @@ export default function CampaignDetails({
       >
         <header className={styles.modalHeader}>
           <div className={styles.headerContent}>
-            <h2>Save Earth!</h2>
-            <p>Environmental</p>
+            <h2>{campaign.title}</h2>
+            <p>{campaign.category}</p>
           </div>
           <button className={styles.closeButton} onClick={onClose}>
             ×
@@ -168,20 +310,60 @@ export default function CampaignDetails({
                 <input
                   type="file"
                   id="file-upload"
+                  accept="image/*"
+                  onChange={handleImageUpload}
                   style={{ display: "none" }}
                 />
-                <label
-                  htmlFor="file-upload"
-                  className={styles.chooseFileButton}
-                >
-                  Choose File
-                </label>
-                <span className={styles.fileLabel}>
-                  {postImage ? postImage.name : "No file chosen"}
-                </span>
+                <div className={styles.uploadPreview}>
+                  <label
+                    htmlFor="file-upload"
+                    className={styles.chooseFileButton}
+                  >
+                    Choose File
+                  </label>
+                  {postImage && (
+                    <div className={styles.selectedFile}>
+                      <span className={styles.fileName}>{postImage.name}</span>
+                      <button
+                        type="button"
+                        className={styles.removeFile}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPostImage(null);
+                          setImagePreviewUrl(null);
+                          const fileInput = document.getElementById(
+                            "file-upload"
+                          ) as HTMLInputElement;
+                          if (fileInput) fileInput.value = "";
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {imagePreviewUrl && (
+                  <div className={styles.imagePreview}>
+                    <img
+                      src={imagePreviewUrl}
+                      alt="Preview"
+                      className={styles.previewImage}
+                    />
+                  </div>
+                )}
                 <button
+                  type="button"
+                  ref={postButtonRef}
                   className={styles.postButton}
-                  onClick={handleCreatePost}
+                  onClick={(e) => {
+                    console.log("Post button clicked", {
+                      hasContent: !!newPost.trim(),
+                      hasImage: !!postImage,
+                      isUserLoggedIn: !!user,
+                    });
+                    handleCreatePost(e);
+                  }}
+                  disabled={(!newPost.trim() && !postImage) || !user}
                 >
                   Post
                 </button>
@@ -202,63 +384,23 @@ export default function CampaignDetails({
                         <img src={post.imageUrl} alt="Post content" />
                       </div>
                     )}
-                    <div className={styles.postActions}>
-                      <button
-                        className={styles.likeButton}
-                        onClick={() => handleLikePost(post.id)}
-                      >
-                        {post.likes?.includes(user?.uid || "") ? (
-                          <FaHeart className={styles.liked} />
-                        ) : (
-                          <FaRegHeart />
-                        )}
-                        <span>{post.likes?.length || 0}</span>
-                      </button>
-                      <button
-                        className={styles.commentButton}
-                        onClick={() => setActiveCommentPost(post.id)}
-                      >
-                        <FaComment />
-                        <span>{post.comments?.length || 0}</span>
-                      </button>
-                    </div>
-
-                    {activeCommentPost === post.id && (
-                      <div className={styles.commentSection}>
-                        <div className={styles.comments}>
-                          {post.comments?.map((comment) => (
-                            <div key={comment.id} className={styles.comment}>
-                              <span className={styles.commentAuthor}>
-                                {comment.userId === user?.uid
-                                  ? "You"
-                                  : "Member"}
-                              </span>
-                              <p>{comment.content}</p>
-                            </div>
-                          ))}
-                        </div>
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            handleAddComment(post.id, newComment);
-                          }}
-                        >
-                          <input
-                            type="text"
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="Add a comment..."
-                            className={styles.commentInput}
-                          />
-                          <button
-                            type="submit"
-                            className={styles.commentSubmit}
-                          >
-                            Post
-                          </button>
-                        </form>
-                      </div>
-                    )}
+                  </div>
+                  <div className={styles.postActions}>
+                    <button
+                      className={`${styles.likeButton} ${
+                        post.likes?.includes(user?.uid || "")
+                          ? styles.liked
+                          : ""
+                      }`}
+                      onClick={() => handleLikePost(post.id)}
+                    >
+                      {post.likes?.includes(user?.uid || "") ? (
+                        <FaHeart />
+                      ) : (
+                        <FaRegHeart />
+                      )}
+                      <span>{post.likes?.length || 0}</span>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -281,19 +423,24 @@ export default function CampaignDetails({
                     onChange={(e) => setNewMember(e.target.value)}
                     placeholder="Enter username to add"
                     className={styles.addMemberInput}
+                    disabled={isAddingMember}
                   />
                   <button
                     onClick={handleAddMember}
                     className={styles.addButton}
+                    disabled={isAddingMember || !newMember.trim()}
                   >
-                    Add
+                    {isAddingMember ? "Adding..." : "Add"}
                   </button>
+                  {addMemberError && (
+                    <p className={styles.errorMessage}>{addMemberError}</p>
+                  )}
                 </div>
               )}
               <div className={styles.membersList}>
                 {campaign.members.map((memberId) => (
                   <div key={memberId} className={styles.memberCard}>
-                    {memberId}
+                    {memberUsernames[memberId] || "Loading..."}
                   </div>
                 ))}
               </div>

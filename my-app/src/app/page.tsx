@@ -1,20 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "../styles/App.module.css";
-import Navbar from "../components/Navbar";
-import SidePanel from "../components/Sidepanel";
-import Post from "../components/Post";
-import CreatePost from "../components/CreatePost";
 import {
   collection,
   query,
   orderBy,
   onSnapshot,
   where,
+  getDocs,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "./firebase/firebaseConfig";
+import styles from "../styles/App.module.css";
+import Navbar from "../components/Navbar";
+import SidePanel from "../components/Sidepanel";
+import Post from "../components/Post";
+import CreatePost from "../components/CreatePost";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
