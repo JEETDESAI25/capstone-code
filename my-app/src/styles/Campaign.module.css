@@ -1,6 +1,6 @@
 .app {
   min-height: 100vh;
-  background-color: #141414;
+  background-color: #2f2f2f;
   color: #ffffff;
 }
 
@@ -153,4 +153,13 @@
 .submitButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.noUserMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #888;
+  font-size: 1.2rem;
 }

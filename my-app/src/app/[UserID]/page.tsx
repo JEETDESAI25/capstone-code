@@ -16,7 +16,16 @@ import LoadingScreen from "../../components/LoadingScreen";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
-import { MdAutoGraph } from "react-icons/md";
+
+interface UserPost {
+  id: string;
+  content: string;
+  timestamp: string;
+  uid: string;
+  imageUrl?: string;
+  likes?: string[];
+  likedBy?: string[];
+}
 
 export default function ProfileDetails({
   params,
@@ -32,20 +41,21 @@ export default function ProfileDetails({
     email?: string;
   } | null>(null);
 
-  const [posts, setPosts] = useState<any[]>([]);
-  const [likedPosts, setLikedPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<UserPost[]>([]);
+  const [likedPosts, setLikedPosts] = useState<UserPost[]>([]);
   const [activeTab, setActiveTab] = useState("posts");
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const [isProcessingFollow, setIsProcessingFollow] = useState(false);
 
   const auth = getAuth();
 
   const handleFollow = async () => {
-    if (!auth.currentUser || isProcessingFollow) return; // Prevent double clicks
+    if (!auth.currentUser || isProcessingFollow) return;
 
-    setIsProcessingFollow(true); // Lock button during execution
+    setIsProcessingFollow(true);
     try {
       const currentUserId = auth.currentUser.uid;
       const profileUserId = params.UserID;
@@ -53,13 +63,16 @@ export default function ProfileDetails({
       await updateFollowers(isFollowing, currentUserId, profileUserId);
       setIsFollowing(!isFollowing);
 
-      // Re-fetch followers to update the count
+      // Re-fetch both follower and following counts
       const updatedUser = await fetchDocumentById("users", profileUserId);
-      setFollowerCount(updatedUser.followers?.length || 0);
+      const currentUser = await fetchDocumentById("users", currentUserId);
+
+      setFollowerCount(updatedUser?.followers?.length || 0);
+      setFollowingCount(currentUser?.following?.length || 0);
     } catch (error) {
       console.error("Error updating follow status:", error);
     } finally {
-      setIsProcessingFollow(false); // Unlock button
+      setIsProcessingFollow(false);
     }
   };
 
@@ -71,10 +84,11 @@ export default function ProfileDetails({
           const newUserData = {
             username: auth.currentUser.displayName || "Anonymous",
             email: auth.currentUser.email,
-            profilePicture: auth.currentUser.photoURL || default_pfp,
+            profilePicture: auth.currentUser.photoURL || default_pfp.src,
             bio: "",
             followers: [], // Initialize as an empty array
-            followingCount: 0,
+            following: [], // Initialize as an empty array
+            uid: auth.currentUser.uid, // Add this line to store the user ID
           };
           await createUserDocument(params.UserID, newUserData);
           userData = newUserData;
@@ -83,11 +97,12 @@ export default function ProfileDetails({
           setUser({
             username: userData.username || "Anonymous",
             bio: userData.bio || "",
-            profilePicture: userData.profilePicture || default_pfp,
+            profilePicture: userData.profilePicture || default_pfp.src,
             email: userData.email,
           });
           setFollowerCount(userData.followers?.length || 0);
-          setIsFollowing(userData.followers?.includes(auth.currentUser.uid));
+          setFollowingCount(userData.following?.length || 0);
+          setIsFollowing(userData.followers?.includes(auth.currentUser?.uid));
         }
 
         const postsRef = collection(db, "posts");
@@ -95,8 +110,12 @@ export default function ProfileDetails({
         const postsSnapshot = await getDocs(postsQuery);
         const userPosts = postsSnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          content: doc.data().content,
+          uid: doc.data().uid,
           timestamp: doc.data().timestamp.toDate().toLocaleString(),
+          imageUrl: doc.data().imageUrl,
+          likes: doc.data().likes || [],
+          likedBy: doc.data().likedBy || [],
         }));
         setPosts(userPosts);
       } catch (error) {
@@ -122,8 +141,12 @@ export default function ProfileDetails({
         const likedPostsSnapshot = await getDocs(likedPostsQuery);
         const likedPostsData = likedPostsSnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data(),
+          content: doc.data().content,
+          uid: doc.data().uid,
           timestamp: doc.data().timestamp.toDate().toLocaleString(),
+          imageUrl: doc.data().imageUrl,
+          likes: doc.data().likes || [],
+          likedBy: doc.data().likedBy || [],
         }));
         setLikedPosts(likedPostsData);
       } catch (error) {
@@ -184,7 +207,7 @@ export default function ProfileDetails({
                     <span className={styles.statLabel}>Posts</span>
                   </div>
                   <div className={styles.stat}>
-                    <span className={styles.statNumber}>0</span>
+                    <span className={styles.statNumber}>{followingCount}</span>
                     <span className={styles.statLabel}>Following</span>
                   </div>
                   <div className={styles.stat}>

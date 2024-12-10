@@ -3,14 +3,24 @@ import styles from "../styles/Post.module.css";
 import Image from "next/image";
 import default_pfp from "./../../public/images/default_pfp.jpeg";
 import { useState, useEffect } from "react";
-import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import { AiOutlineHeart, AiFillHeart, AiOutlineComment } from "react-icons/ai";
 import { getAuth } from "firebase/auth";
 import {
   fetchUserDataById,
   likePost,
   unlikePost,
   deletePostAndImage,
+  addComment,
 } from "../app/firebase/firebaseDatabase";
+
+interface Comment {
+  id: string;
+  content: string;
+  userId: string;
+  createdAt: string;
+  username?: string;
+  profilePicture?: string;
+}
 
 interface PostProps {
   id?: string;
@@ -18,10 +28,11 @@ interface PostProps {
   imageUrl?: string;
   timestamp: string;
   userId?: string;
-  likes?: number[];
+  likes?: string[];
   likedBy?: string[];
-  username?: string; // New prop to display username
-  onDelete?: (id: string) => void; // New prop to handle deletion in the parent component
+  username?: string;
+  onDelete?: (id: string) => void;
+  comments?: Comment[];
 }
 
 export default function Post({
@@ -33,7 +44,8 @@ export default function Post({
   username,
   likes = [],
   likedBy = [],
-  onDelete, // Add onDelete to destructured props
+  onDelete,
+  comments = [],
 }: PostProps) {
   const auth = getAuth();
   const isOwner = userId ? auth.currentUser?.uid === userId : false;
@@ -44,6 +56,10 @@ export default function Post({
   );
   const [profilePic, setProfilePic] = useState<string>(default_pfp.src);
   const [relativeTime, setRelativeTime] = useState<string>("");
+  const [showComments, setShowComments] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [postComments, setPostComments] = useState<Comment[]>(comments);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (auth.currentUser) {
@@ -132,6 +148,54 @@ export default function Post({
     }
   };
 
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Submitting comment with:", {
+      auth: !!auth.currentUser,
+      id,
+      newComment,
+    });
+
+    if (!auth.currentUser || !id || !newComment.trim()) {
+      console.log("Missing required data:", {
+        auth: !!auth.currentUser,
+        id,
+        newComment: !!newComment.trim(),
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const comment = {
+        content: newComment.trim(),
+        userId: auth.currentUser.uid,
+      };
+
+      console.log("Adding comment:", comment);
+      const addedComment = await addComment(id, comment);
+      console.log("Comment added successfully:", addedComment);
+
+      // Fetch user data for the new comment
+      const userData = await fetchUserDataById(auth.currentUser.uid);
+
+      // Add the new comment to the local state
+      const newCommentObj: Comment = {
+        ...addedComment,
+        username: userData?.username || "Unknown User",
+        profilePicture: userData?.profilePicture || default_pfp.src,
+      };
+
+      setPostComments((prev) => [...prev, newCommentObj]);
+      setNewComment("");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      alert("Failed to add comment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className={styles.post}>
       <div className={styles.header}>
@@ -157,6 +221,13 @@ export default function Post({
             )}
             <span>{likeCount}</span>
           </button>
+          <button
+            onClick={() => setShowComments(!showComments)}
+            className={styles.commentButton}
+          >
+            <AiOutlineComment />
+            <span>{postComments.length}</span>
+          </button>
           {isOwner && (
             <button onClick={handleDelete} className={styles.deleteButton}>
               Delete
@@ -181,6 +252,50 @@ export default function Post({
             priority
             unoptimized
           />
+        </div>
+      )}
+
+      {showComments && (
+        <div className={styles.commentsSection}>
+          <form onSubmit={handleAddComment} className={styles.commentForm}>
+            <input
+              type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write a comment..."
+              className={styles.commentInput}
+              disabled={isSubmitting}
+            />
+            <button
+              type="submit"
+              className={styles.commentSubmit}
+              disabled={isSubmitting || !newComment.trim()}
+            >
+              Post
+            </button>
+          </form>
+
+          <div className={styles.commentsList}>
+            {postComments.map((comment) => (
+              <div key={comment.id} className={styles.commentItem}>
+                <Link href={`/${comment.userId}`}>
+                  <Image
+                    src={comment.profilePicture || default_pfp.src}
+                    alt="Profile"
+                    className={styles.commentProfilePic}
+                    width={24}
+                    height={24}
+                  />
+                </Link>
+                <div className={styles.commentContent}>
+                  <span className={styles.commentUsername}>
+                    {comment.username || "Unknown User"}
+                  </span>
+                  <p className={styles.commentText}>{comment.content}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

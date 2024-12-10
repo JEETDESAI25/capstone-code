@@ -13,8 +13,41 @@ import {
   arrayUnion,
   addDoc,
 } from "firebase/firestore";
-import { ref, deleteObject } from "firebase/storage";
+import {
+  ref,
+  deleteObject,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 import { db, storage } from "./firebaseConfig";
+import { v4 as uuidv4 } from "uuid";
+
+interface Post {
+  id: string;
+  content: string;
+  userId: string;
+  createdAt: string;
+  likes: string[];
+  comments: Comment[];
+  imageUrl?: string;
+}
+
+interface Comment {
+  id: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+}
+
+interface UserDocument {
+  username: string;
+  email: string;
+  profilePicture: string;
+  bio: string;
+  followers: string[];
+  following: string[];
+  uid: string;
+}
 
 // Check if a user document exists
 export const userExists = async (uid: string): Promise<boolean> => {
@@ -26,40 +59,47 @@ export const userExists = async (uid: string): Promise<boolean> => {
 // Create or update a user document in the "users" collection
 export const createUserDocument = async (
   uid: string,
-  userData: Record<string, any>
+  userData: Partial<UserDocument>
 ) => {
   try {
-    const userRef = doc(db, "users", uid); // Reference to the user's document
-    await setDoc(userRef, userData, { merge: true }); // Merge existing data
+    const userRef = doc(db, "users", uid);
+    await setDoc(userRef, userData, { merge: true });
     console.log(`User document created/updated for UID: ${uid}`);
   } catch (error) {
     console.error("Error creating or updating user document:", error);
   }
 };
 
-export const fetchDocumentById = async (collection: string, id: string) => {
+export const fetchDocumentById = async (
+  collection: string,
+  id: string
+): Promise<UserDocument | null> => {
   try {
-    const docRef = doc(db, collection, id); // Reference to the document
-    const docSnapshot = await getDoc(docRef); // Fetch the document
+    const docRef = doc(db, collection, id);
+    const docSnapshot = await getDoc(docRef);
 
     if (docSnapshot.exists()) {
-      return { id: docSnapshot.id, ...docSnapshot.data() }; // Return the document data with the ID
+      return { id: docSnapshot.id, ...docSnapshot.data() } as UserDocument;
     } else {
       console.log("Document not found");
       return null;
     }
   } catch (error) {
     console.error("Error fetching document:", error);
-    throw error; // Propagate the error for handling
+    throw error;
   }
 };
 
-export const formatTimestamp = (timestamp: any) => {
+export const formatTimestamp = (
+  timestamp: {
+    toDate: () => Date;
+  } | null
+) => {
   if (!timestamp) return "";
 
   const date = timestamp.toDate();
   const now = new Date();
-  const diffInSeconds = Math.floor((now - date) / 1000);
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) return "just now";
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
@@ -115,15 +155,29 @@ export const updateFollowers = async (
   profileUserId: string
 ) => {
   const profileDocRef = doc(db, "users", profileUserId);
+  const currentUserDocRef = doc(db, "users", currentUserId);
 
-  if (isFollowing) {
-    await updateDoc(profileDocRef, {
-      followers: arrayRemove(currentUserId),
-    });
-  } else {
-    await updateDoc(profileDocRef, {
-      followers: arrayUnion(currentUserId),
-    });
+  try {
+    if (isFollowing) {
+      // Remove from followers and following
+      await updateDoc(profileDocRef, {
+        followers: arrayRemove(currentUserId),
+      });
+      await updateDoc(currentUserDocRef, {
+        following: arrayRemove(profileUserId),
+      });
+    } else {
+      // Add to followers and following
+      await updateDoc(profileDocRef, {
+        followers: arrayUnion(currentUserId),
+      });
+      await updateDoc(currentUserDocRef, {
+        following: arrayUnion(profileUserId),
+      });
+    }
+  } catch (error) {
+    console.error("Error updating follow status:", error);
+    throw error;
   }
 };
 
@@ -134,22 +188,12 @@ export const fetchUserDataById = async (userId: string) => {
 };
 
 // Like a post
-export const likePost = async (
-  campaignId: string,
-  postId: string,
-  userId: string
-) => {
-  const postRef = doc(db, "campaigns", campaignId, "posts", postId);
-  const postDoc = await getDoc(postRef);
-
-  if (postDoc.exists()) {
-    const likes = postDoc.data().likes || [];
-    const newLikes = likes.includes(userId)
-      ? likes.filter((id: string) => id !== userId)
-      : [...likes, userId];
-
-    await updateDoc(postRef, { likes: newLikes });
-  }
+export const likePost = async (postId: string, userId: string) => {
+  const postRef = doc(db, "posts", postId);
+  await updateDoc(postRef, {
+    likes: arrayUnion(userId),
+    likedBy: arrayUnion(userId),
+  });
 };
 
 // Unlike a post
@@ -280,34 +324,93 @@ export const createCampaignPost = async (
   postData: {
     content: string;
     userId: string;
-    imageUrl?: string;
+    imageFile?: File | null;
   }
 ) => {
   try {
+    console.log("Starting post creation for campaign:", campaignId);
     const postsRef = collection(db, "campaigns", campaignId, "posts");
+    const { imageFile, ...postDataWithoutFile } = postData;
+    let uploadedImageUrl: string | undefined;
+
+    if (imageFile) {
+      console.log("Starting image upload...", {
+        fileName: imageFile.name,
+        fileSize: imageFile.size,
+        fileType: imageFile.type,
+      });
+
+      // Create a unique file name to prevent collisions
+      const timestamp = Date.now();
+      const uniqueFileName = `${timestamp}_${imageFile.name.replace(
+        /[^a-zA-Z0-9.]/g,
+        "_"
+      )}`;
+
+      const storageRef = ref(
+        storage,
+        `campaigns/${campaignId}/posts/${uniqueFileName}`
+      );
+
+      try {
+        // Upload the image
+        const uploadResult = await uploadBytes(storageRef, imageFile);
+        console.log("Image upload response:", uploadResult);
+
+        // Get the download URL
+        uploadedImageUrl = await getDownloadURL(uploadResult.ref);
+        console.log("Image URL obtained:", uploadedImageUrl);
+      } catch (uploadError) {
+        console.error("Error during image upload:", uploadError);
+        throw new Error("Failed to upload image. Please try again.");
+      }
+    }
+
+    // Prepare the post data
     const newPost = {
-      ...postData,
+      ...postDataWithoutFile,
       createdAt: new Date().toISOString(),
       likes: [],
+      comments: [],
+      ...(uploadedImageUrl ? { imageUrl: uploadedImageUrl } : {}),
     };
 
-    await addDoc(postsRef, newPost);
-    return newPost;
+    console.log("Creating new post with data:", newPost);
+    const docRef = await addDoc(postsRef, newPost);
+    console.log("Post created successfully with ID:", docRef.id);
+
+    return { id: docRef.id, ...newPost };
   } catch (error) {
-    console.error("Error creating post:", error);
-    throw error;
+    console.error("Detailed error in createCampaignPost:", error);
+    if (error instanceof Error) {
+      throw new Error(`Failed to create post: ${error.message}`);
+    } else {
+      throw new Error("Failed to create post: Unknown error occurred");
+    }
   }
 };
 
-export const fetchCampaignPosts = async (campaignId: string) => {
+export const fetchCampaignPosts = async (
+  campaignId: string
+): Promise<Post[]> => {
   try {
     const postsRef = collection(db, "campaigns", campaignId, "posts");
     const q = query(postsRef, orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
 
-    return querySnapshot.docs.map((doc) => ({
+    const posts = querySnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as Omit<Post, "id">),
+    }));
+
+    return posts.map((post) => ({
+      id: post.id,
+      content: post.content || "",
+      userId: post.userId || "",
+      createdAt: post.createdAt || "",
+      likes: post.likes || [],
+      comments: post.comments || [],
+      imageUrl: post.imageUrl,
     }));
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -345,20 +448,31 @@ export const addMemberByUsername = async (
 };
 
 export const addComment = async (
-  campaignId: string,
   postId: string,
   comment: { content: string; userId: string }
 ) => {
-  const postRef = doc(db, "campaigns", campaignId, "posts", postId);
-  const newComment = {
-    id: uuidv4(),
-    ...comment,
-    createdAt: new Date().toISOString(),
-  };
+  try {
+    const postRef = doc(db, "posts", postId);
+    const newComment = {
+      id: uuidv4(),
+      ...comment,
+      createdAt: new Date().toISOString(),
+    };
 
-  await updateDoc(postRef, {
-    comments: arrayUnion(newComment),
-  });
+    // First get existing comments
+    const postDoc = await getDoc(postRef);
+    const existingComments = postDoc.data()?.comments || [];
+
+    // Add new comment to array
+    await updateDoc(postRef, {
+      comments: [...existingComments, newComment],
+    });
+
+    return newComment;
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    throw error;
+  }
 };
 
 interface Campaign {
@@ -394,6 +508,12 @@ export const fetchUserCampaigns = async (
   }
 };
 
-function uuidv4() {
-  throw new Error("Function not implemented.");
-}
+export const getUsernameById = async (userId: string) => {
+  try {
+    const userDoc = await fetchDocumentById("users", userId);
+    return userDoc?.username || userId; // Fallback to ID if username not found
+  } catch (error) {
+    console.error("Error fetching username:", error);
+    return userId; // Fallback to ID on error
+  }
+};

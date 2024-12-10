@@ -59,8 +59,9 @@ export default function CreatePost({ onPostCreate }: CreatePostProps) {
         content: content,
         imageUrl: imageUrl,
         timestamp: Timestamp.now(),
-        likes: [], // Initialize as an array
+        likes: [],
         likedBy: [],
+        comments: [],
       };
 
       const docRef = await addDoc(collection(db, "posts"), postData);

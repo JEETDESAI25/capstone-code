@@ -59,14 +59,12 @@ const SearchBar: React.FC = () => {
             href={`/${user.id}`}
             className={styles.resultItem}
           >
-            <div>
-              <img
-                src={user.profilePicture || "/default-profile.png"}
-                alt={`${user.username}'s profile`}
-                className={styles.profileImage}
-              />
-              <span>{user.username}</span>
-            </div>
+            <img
+              src={user.profilePicture || "/default-profile.png"}
+              alt={`${user.username}'s profile`}
+              className={styles.profileImage}
+            />
+            <span>{user.username}</span>
           </Link>
         ))}
       </div>

@@ -1,20 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "../styles/App.module.css";
-import Navbar from "../components/Navbar";
-import SidePanel from "../components/Sidepanel";
-import Post from "../components/Post";
-import CreatePost from "../components/CreatePost";
 import {
   collection,
   query,
   orderBy,
   onSnapshot,
   where,
+  getDocs,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "./firebase/firebaseConfig";
+import styles from "../styles/App.module.css";
+import Navbar from "../components/Navbar";
+import SidePanel from "../components/Sidepanel";
+import Post from "../components/Post";
+import CreatePost from "../components/CreatePost";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -91,37 +92,20 @@ export default function Home() {
       <div className={styles.mainContent}>
         <SidePanel />
         <div className={styles.content}>
-          <div className={styles.filters}>
-            <h1
-              className={`${styles.tabButton} ${
-                activeTab === "home" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("home")}
-            >
-              Home
-            </h1>
-            <h1
-              className={`${styles.tabButton} ${
-                activeTab === "following" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("following")}
-            >
-              Following
-            </h1>
-            <h1 className={styles.tabButton}>For You</h1>
-          </div>
           <CreatePost />
           <div className={styles.postsContainer}>
             {(activeTab === "home" ? posts : followingPosts).map((post) => (
               <Post
                 key={post.id}
                 id={post.id}
+                campaignId={post.campaignId}
                 content={post.content}
                 imageUrl={post.imageUrl}
                 timestamp={post.timestamp}
                 userId={post.uid}
                 likes={post.likes}
                 likedBy={post.likedBy}
+                comments={post.comments || []}
                 onDelete={handlePostDelete}
               />
             ))}
