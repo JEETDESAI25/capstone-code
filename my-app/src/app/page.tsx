@@ -91,25 +91,6 @@ export default function Home() {
       <div className={styles.mainContent}>
         <SidePanel />
         <div className={styles.content}>
-          <div className={styles.filters}>
-            <h1
-              className={`${styles.tabButton} ${
-                activeTab === "home" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("home")}
-            >
-              Home
-            </h1>
-            <h1
-              className={`${styles.tabButton} ${
-                activeTab === "following" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("following")}
-            >
-              Following
-            </h1>
-            <h1 className={styles.tabButton}>For You</h1>
-          </div>
           <CreatePost />
           <div className={styles.postsContainer}>
             {(activeTab === "home" ? posts : followingPosts).map((post) => (

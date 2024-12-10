@@ -44,7 +44,12 @@
 }
 
 .sidePanel li:hover {
-  background-color: #2f2f2f;
+  background-color: #7ceed3;
+}
+
+.navLink:hover {
+  color: #1d1d1d;
+  opacity: 1;
 }
 
 .navLink.active {
@@ -52,4 +57,19 @@
   opacity: 1;
   background-color: rgba(124, 238, 211, 0.1);
   border-left: 3px solid #7ceed3;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  transition: all 0.2s ease;
+}
+
+.menuItem:hover .icon {
+  color: #7ceed3; /* Theme color */
+}
+
+.menuText {
+  font-size: 16px;
+  font-weight: 400;
 }
