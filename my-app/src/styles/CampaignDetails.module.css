@@ -78,28 +78,33 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin: 1rem 0;
 }
 
+/* Hide the native file input */
+.fileInputContainer input[type="file"] {
+  display: none;
+}
+
+/* Style for the custom file input button */
 .chooseFileButton {
-  background-color: rgba(124, 238, 211, 0.1);
-  color: #7ceed3;
-  border: 1px solid #7ceed3;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.9rem;
+  background-color: #7ceed3;
+  color: #141414;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 24px;
   font-weight: 500;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
 .chooseFileButton:hover {
-  background-color: rgba(124, 238, 211, 0.2);
+  background-color: #6ad1c0;
 }
 
 .fileLabel {
   color: #888;
   font-size: 0.9rem;
+  flex: 1;
 }
 
 .postButton {
@@ -111,7 +116,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  float: right;
+  margin-left: auto;
 }
 
 .postButton:hover {
@@ -211,8 +216,8 @@
 
 .addMemberInput {
   flex: 1;
-  background-color: rgba(124, 238, 211, 0.1);
-  border: 1px solid #7ceed3;
+  background-color: #141414;
+  border: 1px solid #2a2a2a;
   border-radius: 20px;
   padding: 0.8rem 1.2rem;
   color: #ffffff;
@@ -221,13 +226,13 @@
 
 .addMemberInput:focus {
   outline: none;
-  background-color: rgba(124, 238, 211, 0.15);
+  border-color: #7ceed3;
 }
 
 .addButton {
-  background-color: rgba(124, 238, 211, 0.1);
-  color: #7ceed3;
-  border: 1px solid #7ceed3;
+  background-color: #7ceed3;
+  color: #141414;
+  border: none;
   padding: 0.8rem 1.2rem;
   border-radius: 20px;
   cursor: pointer;
@@ -236,7 +241,7 @@
 }
 
 .addButton:hover {
-  background-color: rgba(124, 238, 211, 0.2);
+  background-color: #6ad1c0;
 }
 
 .membersList {

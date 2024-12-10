@@ -164,16 +164,24 @@ export default function CampaignDetails({
                 placeholder="Share something with the group..."
                 className={styles.postInput}
               />
-              <div className={styles.postActions}>
+              <div className={styles.fileInputContainer}>
                 <input
                   type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className={styles.fileInput}
+                  id="file-upload"
+                  style={{ display: "none" }}
                 />
+                <label
+                  htmlFor="file-upload"
+                  className={styles.chooseFileButton}
+                >
+                  Choose File
+                </label>
+                <span className={styles.fileLabel}>
+                  {postImage ? postImage.name : "No file chosen"}
+                </span>
                 <button
-                  onClick={handleCreatePost}
                   className={styles.postButton}
+                  onClick={handleCreatePost}
                 >
                   Post
                 </button>
@@ -272,8 +280,14 @@ export default function CampaignDetails({
                     value={newMember}
                     onChange={(e) => setNewMember(e.target.value)}
                     placeholder="Enter username to add"
+                    className={styles.addMemberInput}
                   />
-                  <button onClick={handleAddMember}>Add</button>
+                  <button
+                    onClick={handleAddMember}
+                    className={styles.addButton}
+                  >
+                    Add
+                  </button>
                 </div>
               )}
               <div className={styles.membersList}>
