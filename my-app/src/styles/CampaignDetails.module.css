@@ -87,6 +87,7 @@
 .uploadPreview {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
   width: 100%;
 }
@@ -148,19 +149,19 @@
 }
 
 .postButton {
-  align-self: flex-end;
-  background-color: #4caf50;
-  color: white;
-  padding: 8px 20px;
+  background-color: #7ceed3;
+  color: #141414;
   border: none;
-  border-radius: 4px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 24px;
+  font-weight: 500;
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.2s;
 }
 
 .postButton:hover:not(:disabled) {
-  background-color: #45a049;
+  background-color: #6ad1c0;
 }
 
 .postButton:disabled {

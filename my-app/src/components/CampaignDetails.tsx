@@ -119,19 +119,19 @@ export default function CampaignDetails({
     console.log("File details:", {
       name: file.name,
       size: file.size,
-      type: file.type
+      type: file.type,
     });
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file");
       return;
     }
-    
+
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      alert('File is too large. Please select an image under 5MB');
+      alert("File is too large. Please select an image under 5MB");
       return;
     }
 
@@ -307,40 +307,60 @@ export default function CampaignDetails({
                 className={styles.postInput}
               />
               <div className={styles.fileInputContainer}>
-                <input
-                  type="file"
-                  id="file-upload"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  style={{ display: "none" }}
-                />
                 <div className={styles.uploadPreview}>
-                  <label
-                    htmlFor="file-upload"
-                    className={styles.chooseFileButton}
+                  <div className={styles.leftSide}>
+                    <input
+                      type="file"
+                      id="file-upload"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      style={{ display: "none" }}
+                    />
+                    <label
+                      htmlFor="file-upload"
+                      className={styles.chooseFileButton}
+                    >
+                      Choose File
+                    </label>
+                    {postImage && (
+                      <div className={styles.selectedFile}>
+                        <span className={styles.fileName}>
+                          {postImage.name}
+                        </span>
+                        <button
+                          type="button"
+                          className={styles.removeFile}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setPostImage(null);
+                            setImagePreviewUrl(null);
+                            const fileInput = document.getElementById(
+                              "file-upload"
+                            ) as HTMLInputElement;
+                            if (fileInput) fileInput.value = "";
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    ref={postButtonRef}
+                    className={styles.postButton}
+                    onClick={(e) => {
+                      console.log("Post button clicked", {
+                        hasContent: !!newPost.trim(),
+                        hasImage: !!postImage,
+                        isUserLoggedIn: !!user,
+                      });
+                      handleCreatePost(e);
+                    }}
+                    disabled={(!newPost.trim() && !postImage) || !user}
                   >
-                    Choose File
-                  </label>
-                  {postImage && (
-                    <div className={styles.selectedFile}>
-                      <span className={styles.fileName}>{postImage.name}</span>
-                      <button
-                        type="button"
-                        className={styles.removeFile}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setPostImage(null);
-                          setImagePreviewUrl(null);
-                          const fileInput = document.getElementById(
-                            "file-upload"
-                          ) as HTMLInputElement;
-                          if (fileInput) fileInput.value = "";
-                        }}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  )}
+                    Post
+                  </button>
                 </div>
                 {imagePreviewUrl && (
                   <div className={styles.imagePreview}>
@@ -351,22 +371,6 @@ export default function CampaignDetails({
                     />
                   </div>
                 )}
-                <button
-                  type="button"
-                  ref={postButtonRef}
-                  className={styles.postButton}
-                  onClick={(e) => {
-                    console.log("Post button clicked", {
-                      hasContent: !!newPost.trim(),
-                      hasImage: !!postImage,
-                      isUserLoggedIn: !!user,
-                    });
-                    handleCreatePost(e);
-                  }}
-                  disabled={(!newPost.trim() && !postImage) || !user}
-                >
-                  Post
-                </button>
               </div>
             </div>
 
