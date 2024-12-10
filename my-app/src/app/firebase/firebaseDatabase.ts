@@ -188,22 +188,12 @@ export const fetchUserDataById = async (userId: string) => {
 };
 
 // Like a post
-export const likePost = async (
-  campaignId: string,
-  postId: string,
-  userId: string
-) => {
-  const postRef = doc(db, "campaigns", campaignId, "posts", postId);
-  const postDoc = await getDoc(postRef);
-
-  if (postDoc.exists()) {
-    const likes = postDoc.data().likes || [];
-    const newLikes = likes.includes(userId)
-      ? likes.filter((id: string) => id !== userId)
-      : [...likes, userId];
-
-    await updateDoc(postRef, { likes: newLikes });
-  }
+export const likePost = async (postId: string, userId: string) => {
+  const postRef = doc(db, "posts", postId);
+  await updateDoc(postRef, {
+    likes: arrayUnion(userId),
+    likedBy: arrayUnion(userId),
+  });
 };
 
 // Unlike a post
@@ -458,20 +448,31 @@ export const addMemberByUsername = async (
 };
 
 export const addComment = async (
-  campaignId: string,
   postId: string,
   comment: { content: string; userId: string }
 ) => {
-  const postRef = doc(db, "campaigns", campaignId, "posts", postId);
-  const newComment = {
-    id: uuidv4(),
-    ...comment,
-    createdAt: new Date().toISOString(),
-  };
+  try {
+    const postRef = doc(db, "posts", postId);
+    const newComment = {
+      id: uuidv4(),
+      ...comment,
+      createdAt: new Date().toISOString(),
+    };
 
-  await updateDoc(postRef, {
-    comments: arrayUnion(newComment),
-  });
+    // First get existing comments
+    const postDoc = await getDoc(postRef);
+    const existingComments = postDoc.data()?.comments || [];
+
+    // Add new comment to array
+    await updateDoc(postRef, {
+      comments: [...existingComments, newComment],
+    });
+
+    return newComment;
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    throw error;
+  }
 };
 
 interface Campaign {

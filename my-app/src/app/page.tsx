@@ -98,12 +98,14 @@ export default function Home() {
               <Post
                 key={post.id}
                 id={post.id}
+                campaignId={post.campaignId}
                 content={post.content}
                 imageUrl={post.imageUrl}
                 timestamp={post.timestamp}
                 userId={post.uid}
                 likes={post.likes}
                 likedBy={post.likedBy}
+                comments={post.comments || []}
                 onDelete={handlePostDelete}
               />
             ))}
