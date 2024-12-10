@@ -56,7 +56,7 @@ const SearchBar: React.FC = () => {
         {results.map((user) => (
           <Link
             key={user.id}
-            href={`/profile/${user.id}`}
+            href={`/${user.id}`}
             className={styles.resultItem}
           >
             <div>
