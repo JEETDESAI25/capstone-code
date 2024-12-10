@@ -4,7 +4,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(20, 20, 20, 0.98);
+  /* background-color: rgba(20, 20, 20, 0.98); */
+  background-color: #2f2f2f;
   z-index: 1000;
 }
 
@@ -148,7 +149,7 @@
 
 .postButton {
   align-self: flex-end;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   padding: 8px 20px;
   border: none;

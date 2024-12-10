@@ -193,9 +193,10 @@
 }
 
 .sectionTitle {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: #fff;
+  font-size: 1.8rem;
+  color: #7ceed3;
+  margin-bottom: 2rem;
+  font-weight: 500;
 }
 
 .noPosts {
@@ -249,4 +250,10 @@
 
 .followButton.following {
   background-color: #6c757d;
+}
+
+.postsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
