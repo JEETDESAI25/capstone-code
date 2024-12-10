@@ -39,6 +39,16 @@ interface Comment {
   createdAt: string;
 }
 
+interface UserDocument {
+  username: string;
+  email: string;
+  profilePicture: string;
+  bio: string;
+  followers: string[];
+  following: string[];
+  uid: string;
+}
+
 // Check if a user document exists
 export const userExists = async (uid: string): Promise<boolean> => {
   const userRef = doc(db, "users", uid);
@@ -49,11 +59,11 @@ export const userExists = async (uid: string): Promise<boolean> => {
 // Create or update a user document in the "users" collection
 export const createUserDocument = async (
   uid: string,
-  userData: Record<string, string | number | boolean | null>
+  userData: Partial<UserDocument>
 ) => {
   try {
-    const userRef = doc(db, "users", uid); // Reference to the user's document
-    await setDoc(userRef, userData, { merge: true }); // Merge existing data
+    const userRef = doc(db, "users", uid);
+    await setDoc(userRef, userData, { merge: true });
     console.log(`User document created/updated for UID: ${uid}`);
   } catch (error) {
     console.error("Error creating or updating user document:", error);
@@ -63,13 +73,13 @@ export const createUserDocument = async (
 export const fetchDocumentById = async (
   collection: string,
   id: string
-): Promise<any> => {
+): Promise<UserDocument | null> => {
   try {
     const docRef = doc(db, collection, id);
     const docSnapshot = await getDoc(docRef);
 
     if (docSnapshot.exists()) {
-      return { id: docSnapshot.id, ...docSnapshot.data() };
+      return { id: docSnapshot.id, ...docSnapshot.data() } as UserDocument;
     } else {
       console.log("Document not found");
       return null;
@@ -145,15 +155,29 @@ export const updateFollowers = async (
   profileUserId: string
 ) => {
   const profileDocRef = doc(db, "users", profileUserId);
+  const currentUserDocRef = doc(db, "users", currentUserId);
 
-  if (isFollowing) {
-    await updateDoc(profileDocRef, {
-      followers: arrayRemove(currentUserId),
-    });
-  } else {
-    await updateDoc(profileDocRef, {
-      followers: arrayUnion(currentUserId),
-    });
+  try {
+    if (isFollowing) {
+      // Remove from followers and following
+      await updateDoc(profileDocRef, {
+        followers: arrayRemove(currentUserId),
+      });
+      await updateDoc(currentUserDocRef, {
+        following: arrayRemove(profileUserId),
+      });
+    } else {
+      // Add to followers and following
+      await updateDoc(profileDocRef, {
+        followers: arrayUnion(currentUserId),
+      });
+      await updateDoc(currentUserDocRef, {
+        following: arrayUnion(profileUserId),
+      });
+    }
+  } catch (error) {
+    console.error("Error updating follow status:", error);
+    throw error;
   }
 };
 

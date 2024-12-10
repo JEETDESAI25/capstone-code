@@ -18,10 +18,10 @@ interface PostProps {
   imageUrl?: string;
   timestamp: string;
   userId?: string;
-  likes?: number[];
+  likes?: string[];
   likedBy?: string[];
-  username?: string; // New prop to display username
-  onDelete?: (id: string) => void; // New prop to handle deletion in the parent component
+  username?: string;
+  onDelete?: (id: string) => void;
 }
 
 export default function Post({
@@ -33,7 +33,7 @@ export default function Post({
   username,
   likes = [],
   likedBy = [],
-  onDelete, // Add onDelete to destructured props
+  onDelete,
 }: PostProps) {
   const auth = getAuth();
   const isOwner = userId ? auth.currentUser?.uid === userId : false;
