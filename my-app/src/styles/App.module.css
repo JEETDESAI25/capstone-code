@@ -3,11 +3,7 @@
   margin: 0;
   padding: 0;
   width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  min-height: 100vh;
 }
 
 .app {
@@ -16,55 +12,32 @@
   min-height: 100vh;
   background-color: #2f2f2f;
   color: white;
+  position: relative;
+}
+
+/* Add styles for navbar container */
+.navbarContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #2f2f2f;
+  z-index: 1000;
 }
 
 .mainContent {
   display: flex;
-  margin-top: 80px; /* Matches the navbar's height */
-  height: calc(100vh - 60px); /* Ensures the content fits below the navbar */
-  overflow-y: hidden;
-  position: fixed;
+  width: 100%;
+  padding-top: 80px;
 }
 
 .content {
-  margin-left: 150px; /* Matches the side panel's width */
   flex: 1;
-  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px 40px;
   overflow-y: auto;
-  background-color: #2f2f2f;
-}
-
-.filters {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-bottom: 20px;
-  justify-content: center;
-  align-items: center;
-}
-
-.filter {
-  color: white;
-  cursor: pointer;
-  padding: 0px 10px;
-  margin: 0px 10px;
-  font-size: 1.4rem;
-}
-
-.filter:hover {
-  position: relative;
-  display: inline-block;
-  text-underline-offset: 10px;
-}
-
-.filter::after {
-  content: "";
-  position: absolute;
-  left: -9px;
-  bottom: -3px; /* Adjust to move closer or farther from the text */
-  width: 110%; /* Extend beyond the length of the text */
-  height: 3px; /* Thickness of the underline */
-  background-color: white; /* Color of the underline */
 }
 
 /* Profile Section */
@@ -148,11 +121,17 @@
 
 .postsContainer {
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 20px;
+  padding-bottom: 40px;
+}
+
+/* Make sure posts take full width of their container */
+.postsContainer > * {
+  width: 100%;
+  max-width: 1000px;
 }
 
 .profileHeader {
