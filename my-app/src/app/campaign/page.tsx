@@ -34,39 +34,34 @@ export default function CampaignPage() {
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(
     null
   );
-  const [user, setUser] = useState(auth.currentUser);
+  const [user, setUser] = useState<any>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      setAuthChecked(true);
+
       if (currentUser) {
-        loadCampaigns();
+        try {
+          const fetchedCampaigns = await fetchUserCampaigns(currentUser.uid);
+          setCampaigns(fetchedCampaigns as Campaign[]);
+        } catch (error) {
+          console.error("Error loading campaigns:", error);
+        }
       } else {
         setCampaigns([]);
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  const loadCampaigns = async () => {
-    try {
-      if (user) {
-        const fetchedCampaigns = await fetchUserCampaigns(user.uid);
-        console.log("Fetched campaigns:", fetchedCampaigns); // Debug log
-        setCampaigns(fetchedCampaigns as Campaign[]);
-      }
-    } catch (error) {
-      console.error("Error loading campaigns:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDeleteCampaign = async (campaignId: string) => {
     try {
-      await deleteCampaign(campaignId, user?.uid || "");
+      if (!user) return;
+      await deleteCampaign(campaignId, user.uid);
       setCampaigns((prevCampaigns) =>
         prevCampaigns.filter((campaign) => campaign.id !== campaignId)
       );
@@ -89,8 +84,24 @@ export default function CampaignPage() {
     }
   };
 
-  if (loading) {
+  if (!authChecked || loading) {
     return <LoadingScreen />;
+  }
+
+  if (!user) {
+    return (
+      <div className={styles.app}>
+        <Navbar />
+        <div className={styles.mainContent}>
+          <SidePanel />
+          <main className={styles.content}>
+            <div className={styles.noUserMessage}>
+              Please log in to view your campaigns
+            </div>
+          </main>
+        </div>
+      </div>
+    );
   }
 
   return (
