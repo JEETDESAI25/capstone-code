@@ -22,20 +22,21 @@ interface FollowingUser {
 export default function Following() {
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
   const auth = getAuth();
 
   useEffect(() => {
-    const fetchFollowing = async () => {
-      if (!auth.currentUser) {
+    // Listen for auth state changes
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      setAuthChecked(true);
+
+      if (!user) {
         setLoading(false);
         return;
       }
 
       try {
-        const currentUserData = await fetchDocumentById(
-          "users",
-          auth.currentUser.uid
-        );
+        const currentUserData = await fetchDocumentById("users", user.uid);
         const followingIds = currentUserData?.following || [];
 
         if (followingIds.length === 0) {
@@ -62,12 +63,13 @@ export default function Following() {
       } finally {
         setLoading(false);
       }
-    };
+    });
 
-    fetchFollowing();
-  }, [auth.currentUser]);
+    // Cleanup subscription
+    return () => unsubscribe();
+  }, []); // Remove auth.currentUser dependency
 
-  if (loading) {
+  if (!authChecked || loading) {
     return <LoadingScreen />;
   }
 
